@@ -50,10 +50,7 @@ public class Employee {
     }
 
     public double computeSalary() {
-        return pay.getBasicSalary()
-                + pay.getRiceSubsidy()
-                + pay.getPhoneAllowance()
-                + pay.getClothingAllowance();
+        return pay.getBasicSalary() + pay.getRiceSubsidy() + pay.getPhoneAllowance() + pay.getClothingAllowance();
     }
 
 }
