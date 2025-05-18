@@ -26,7 +26,6 @@ public class Employee {
         this.status = status;
         this.position = position;
         this.pay = pay;
-        this.basicSalary = basicSalary;
     }
 
     public int getEmployeeNumber() {
