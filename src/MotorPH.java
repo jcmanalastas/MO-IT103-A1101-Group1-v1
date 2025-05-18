@@ -19,7 +19,7 @@ public class MotorPH {
             System.out.printf("%-15s %-20s %-25s\n", "Employee #", "Employee Name", "Birthday");
             System.out.printf("%-15s %-20s %-25s\n", employee.getEmployeeNumber(), employee.getFullName(), employee.getBirthday());
             System.out.println("\n===== Salary Information ===========");
-            System.out.println("Basic Salary: "+ employee.computeSalary());
+            System.out.println("Compute Salary: "+ employee.computeSalary());
 
 
         } else {
