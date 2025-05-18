@@ -1,23 +1,59 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * MotorPH Payroll System - Main Program
- *
- * This program allows users to:
- * 1. View Employee List
- * 2. Display Total Hours Worked
- * 3. Compute Gross Weekly Salary
- * 4. Compute Net Weekly Salary
- * 5. Exit the program
- *
- *
- */
+import java.util.*;
 
 public class MotorPH {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
+        String path = "Data.csv";
+        List<String[]> data = new ArrayList<>();
 
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                data.add(values);
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+            return;
+        } catch (IOException e) {
+            System.out.println("Error reading file.");
+            return;
+        }
+
+        // Get user input
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Employee ID: ");
+        String inputID = scanner.nextLine();
+        scanner.close();
+
+        // Search for Employee ID
+        boolean found = false;
+
+        System.out.printf("%-15s %-20s %-25s\n", "Employee Number", "Employee Name", "Employee Address");
+
+        for (String[] row : data) { // Single loop to find matching Employee ID
+            if (row.length > 0 && row[0].equals(inputID)) {
+                // Print only specific columns
+                System.out.printf("%-15s %-20s %-25s\n",
+                        row[0].replace("\"", ""), // Employee Number
+                        row[1].replace("\"", "") + " " + row[2].replace("\"", ""), // Employee Name
+                        row[4].replace("\"", "") // Employee Address
+                );
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Employee ID not found.");
+        }
+    }
 }
+
+
