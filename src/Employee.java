@@ -15,7 +15,6 @@ public class Employee {
     private String status;
     private Job position;
     private Compensation pay;
-    private double basicSalary;
 
     public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
