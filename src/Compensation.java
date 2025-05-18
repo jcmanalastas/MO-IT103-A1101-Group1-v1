@@ -18,7 +18,6 @@ public class Compensation {
 
     // Getters and Setters
 
-
     public double getBasicSalary() {
         return basicSalary;
     }

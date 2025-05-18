@@ -9,14 +9,15 @@ import java.time.LocalDate;
 public class Employee {
     private int employeeNumber; // Employee ID
     private Person name; // Employee Name under Person class
-    private LocalDate birthday;
+    private String birthday;
     private ContactInfo contact;
     private GovernmentID id;
     private String status;
     private Job position;
     private Compensation pay;
+    private double basicSalary;
 
-    public Employee(int employeeNumber, Person name, LocalDate birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
+    public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
         this.name = name;
         this.birthday = birthday;
@@ -25,13 +26,14 @@ public class Employee {
         this.status = status;
         this.position = position;
         this.pay = pay;
+        this.basicSalary = basicSalary;
     }
 
     public int getEmployeeNumber() {
         return employeeNumber;
     }
 
-    public LocalDate getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
@@ -53,4 +55,5 @@ public class Employee {
                 + pay.getPhoneAllowance()
                 + pay.getClothingAllowance();
     }
+
 }
