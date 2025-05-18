@@ -35,8 +35,8 @@ public class MotorPHCSVLoader {
                 int employeeNumber = Integer.parseInt(fields.get(0).trim());
 
                 // Name
-                String firstName = fields.get(1).trim();
-                String lastName = fields.get(2).trim();
+                String firstName = fields.get(2).trim();
+                String lastName = fields.get(1).trim();
                 Person person = new Person(firstName, lastName);
 
                 // Birthday
