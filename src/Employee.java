@@ -1,4 +1,6 @@
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Employee Class
@@ -15,6 +17,7 @@ public class Employee {
     private String status;
     private Job position;
     private Compensation pay;
+    private List<Attendance> attendanceRecords;
 
     public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
@@ -50,5 +53,4 @@ public class Employee {
     public double computeSalary() {
         return pay.getBasicSalary() + pay.getRiceSubsidy() + pay.getPhoneAllowance() + pay.getClothingAllowance();
     }
-
 }
