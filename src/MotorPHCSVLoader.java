@@ -43,15 +43,15 @@ public class MotorPHCSVLoader {
                 String birthday = fields.get(3).trim();
 
                 // Contact
-                String phone = fields.get(4).trim();
-                String address = fields.get(8).trim();
+                String phone = fields.get(5).trim();
+                String address = fields.get(4).trim();
                 ContactInfo contact = new ContactInfo(address, phone);
 
                 // Government ID
-                String sss = fields.get(5).trim();
-                String philhealth = fields.get(6).trim();
-                String pagibig = fields.get(7).trim();
-                String tin = fields.get(9).trim();
+                String sss = fields.get(6).trim();
+                String philhealth = fields.get(7).trim();
+                String pagibig = fields.get(9).trim();
+                String tin = fields.get(8).trim();
                 GovernmentID govID = new GovernmentID(sss, philhealth, pagibig, tin);
 
                 // Status

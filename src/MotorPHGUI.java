@@ -1,12 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 
 public class MotorPHGUI extends JFrame {
     private JTextField empIDField;
     private JTextField payCoverageField;
     private JTextArea resultArea;
+    private JPanel panelMain;
 
     public MotorPHGUI() {
         setTitle("MotorPH Employee Lookup");
@@ -64,40 +64,19 @@ public class MotorPHGUI extends JFrame {
             return;
         }
 
-        File file = new File("Data.csv");
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "Data.csv not found!", "File Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("Data.csv");
+        Employee employee = csvLoader.getEmployee(Integer.parseInt(inputID));
+
+        if (employee != null) {
+            resultArea.setText("Employee Number: " + employee.getEmployeeNumber() + "\n"
+                    + "Employee Name: " + employee.getFullName() + "\n"
+                    + "Employee Birthday: " + employee.getBirthday() + "\n"
+                    + "Pay Coverage: " + payCoverage
+                    +"\n" + "Address: "+ employee.getContact().getAddress());
+        } else {
+            resultArea.setText("Employee ID not found.");
         }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean found = false;
-
-            while ((line = br.readLine()) != null) {
-                String[] row = line.split(",");
-
-                if (row.length > 0 && row[0].replace("\"", "").equals(inputID)) {
-                    String empNum = row[0].replace("\"", "");
-                    String empName = row[1].replace("\"", "") + " " + row[2].replace("\"", "");
-                    String empAddress = row[4].replace("\"", "");
-
-                    resultArea.setText("Employee Number: " + empNum + "\n"
-                            + "Employee Name: " + empName + "\n"
-                            + "Employee Address: " + empAddress + "\n"
-                            + "Pay Coverage: " + payCoverage);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                resultArea.setText("Employee ID not found.");
-            }
-
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error reading file.", "I/O Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     public static void main(String[] args) {

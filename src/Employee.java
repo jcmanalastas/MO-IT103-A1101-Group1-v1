@@ -42,6 +42,8 @@ public class Employee {
         return status;
     }
 
+    public ContactInfo getContact() { return contact; }
+
     public Job getPosition() {
         return position;
     }
