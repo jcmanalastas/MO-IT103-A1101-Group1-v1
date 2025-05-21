@@ -22,6 +22,8 @@ public class MotorPH_GUI extends JFrame {
             }
         });
 }
+
+//Test
     public static void main(String[] args) {
         MotorPH_GUI h = new MotorPH_GUI();
         h.setContentPane(h.mainPanel);
