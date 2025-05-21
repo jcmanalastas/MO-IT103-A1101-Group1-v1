@@ -10,6 +10,9 @@ public class MotorPH_GUI extends JFrame {
     private JScrollPane resultarea;
 
     public MotorPH_GUI() {
+        MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("Data.csv");
+        Employee employee = csvLoader.getEmployee(Integer.parseInt(inputID));
+
         btnclick.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
