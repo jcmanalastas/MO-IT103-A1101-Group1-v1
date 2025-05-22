@@ -63,7 +63,6 @@ public class MotorPHCSVLoader {
                 Job job = new Job(positionTitle, supervisor);
 
                 // Compensation
-
                 double basicSalary = tryParseDouble(fields.get(13));
                 double riceSubsidy = tryParseDouble(fields.get(14));
                 double phoneAllowance = tryParseDouble(fields.get(15));

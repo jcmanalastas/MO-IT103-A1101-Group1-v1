@@ -66,4 +66,13 @@ public class Compensation {
         this.semiGross = semiGross;
     }
 
+    public double getMonthlyGrossSalary() {
+        return basicSalary + riceSubsidy + phoneAllowance + clothingAllowance;
+    }
+
+    public double calculateHourlyRate(){
+        double annualSalary = getMonthlyGrossSalary()* 12;
+        return annualSalary/ 1760;
+
+    }
 }

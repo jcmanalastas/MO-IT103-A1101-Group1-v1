@@ -42,7 +42,8 @@ public class Employee {
         return status;
     }
 
-    public ContactInfo getContact() { return contact; }
+    public ContactInfo getContact() {
+        return contact; }
 
     public Job getPosition() {
         return position;
@@ -52,7 +53,12 @@ public class Employee {
         return name.getFirstName() + " " + name.getLastName();
     }
 
-    public double computeSalary() {
-        return pay.getBasicSalary() + pay.getRiceSubsidy() + pay.getPhoneAllowance() + pay.getClothingAllowance();
+    public Compensation getPay(){
+        return pay;
     }
+
+    public double getMonthlySalary(){
+        return pay.getMonthlyGrossSalary();
+    }
+
 }
