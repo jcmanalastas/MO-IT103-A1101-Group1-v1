@@ -9,6 +9,9 @@ public class GUI extends JFrame {
     private JRadioButton btn30;
     private JTable txtPayslip;
     private JButton btnSearch;
+    private JLabel lblEmpName1;
+    private JLabel lblEmpNum1;
+    private JLabel lblBirthday1;
 
     public GUI() {
         setTitle("MotorPH Payroll System");
