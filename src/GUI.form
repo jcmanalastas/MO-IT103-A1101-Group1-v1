@@ -230,7 +230,7 @@
         <properties>
           <enabled value="false"/>
         </properties>
-        <border type="none"/>
+        <border type="bevel-raised" title="Payslip Information" title-justification="2"/>
         <children>
           <component id="e4278" class="javax.swing.JTable" binding="txtPayslip">
             <constraints/>
