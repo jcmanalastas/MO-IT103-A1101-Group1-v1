@@ -26,6 +26,11 @@ public class GUI extends JFrame {
         ));
     }
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GUI().setVisible(true));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new GUI().setVisible(true);
+            }
+        });
     }
 }
