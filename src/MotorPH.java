@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
 import java.util.Scanner;
 
 public class MotorPH {
@@ -11,8 +10,7 @@ public class MotorPH {
         Attendance.loadAttendanceFromCSV();
         Scanner scanner = new Scanner(System.in);
 
-        MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("Data.csv");
-        Random random = new Random();
+        MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
 
         System.out.println("Welcome to MotorPH Payroll System!");
 
