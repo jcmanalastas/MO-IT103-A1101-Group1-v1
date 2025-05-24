@@ -64,13 +64,13 @@
                     </constraints>
                     <properties>
                       <model>
-                        <item value="Jun"/>
-                        <item value="Jul"/>
-                        <item value="Aug"/>
-                        <item value="Sep"/>
-                        <item value="Oct"/>
-                        <item value="Nov"/>
-                        <item value="Dec"/>
+                        <item value="June"/>
+                        <item value="July"/>
+                        <item value="August"/>
+                        <item value="September"/>
+                        <item value="October"/>
+                        <item value="November"/>
+                        <item value="December"/>
                       </model>
                     </properties>
                   </component>

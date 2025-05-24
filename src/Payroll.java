@@ -110,7 +110,25 @@ public class Payroll {
         System.out.println("========================");
     }
 
+    public double getSss() {
+        return sss;
+    }
+
+    public double getPhilHealth() {
+        return philHealth;
+    }
+
+    public double getPagIbig() {
+        return pagIbig;
+    }
+
+    public double getTax() {
+        return tax;
+    }
     public double getNetSalary() {
         return netSalary;
+    }
+    public double getGrossSalary() {
+        return grossSalary;
     }
 }
