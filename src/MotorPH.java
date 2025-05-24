@@ -14,7 +14,6 @@ public class MotorPH {
 
         System.out.println("Welcome to MotorPH Payroll System!");
 
-        // Input Employee ID
         System.out.print("Enter Employee ID: ");
         int inputID = scanner.nextInt();
         scanner.nextLine();
@@ -26,7 +25,6 @@ public class MotorPH {
             return;
         }
 
-        // Input Month
         System.out.print("Enter Month (Jun, Jul, Aug, Sep, Oct, Nov, Dec): ");
         String monthInput = scanner.nextLine().trim().toLowerCase();
 
@@ -37,7 +35,6 @@ public class MotorPH {
             return;
         }
 
-        // Input Pay Coverage
         System.out.println("Select Pay Coverage:");
         System.out.println("1 - Day 1 to 15");
         System.out.println("2 - Day 16 to end of month");
@@ -46,7 +43,7 @@ public class MotorPH {
         scanner.nextLine();
 
         LocalDate fromDate, toDate;
-        int currentYear = 2024;
+        int currentYear = LocalDate.now().getYear();
 
         if (coverage == 1) {
             fromDate = LocalDate.of(currentYear, monthNumber, 1);
@@ -54,20 +51,17 @@ public class MotorPH {
         } else if (coverage == 2) {
             fromDate = LocalDate.of(currentYear, monthNumber, 16);
             YearMonth yearMonth = YearMonth.of(currentYear, monthNumber);
-            int lastDay = yearMonth.lengthOfMonth();
-            toDate = LocalDate.of(currentYear, monthNumber, lastDay);
+            toDate = LocalDate.of(currentYear, monthNumber, yearMonth.lengthOfMonth());
         } else {
             System.out.println("Invalid coverage option.");
             scanner.close();
             return;
         }
 
-        //Create a Payroll object and process the employee's payslip based on attendance
         Payroll payroll = new Payroll();
         double totalHours = Attendance.getTotalWorkHours(inputID, fromDate, toDate);
 
-        payroll.processPayroll(employee,fromDate,toDate,totalHours);
-
+        payroll.processPayroll(employee, totalHours);
         scanner.close();
     }
 }
