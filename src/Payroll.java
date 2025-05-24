@@ -25,36 +25,28 @@ public class Payroll {
     private void calculateGrossSalary(double totalHours, double hourlyRate) {
         this.grossSalary = totalHours * hourlyRate;
     }
+
     private double computeSSS(double basicSalary) {
         if (basicSalary < 3250) {
             return 135.00;
         }
-
-        // If above or equal to 24,750
         if (basicSalary >= 24750) {
             return 1125.00;
         }
-
-        // Calculate bracket index: (salary - 3250) / 500
         int bracket = (int) ((basicSalary - 3250) / 500);
-
-        // Base contribution: 157.50 for first bracket, +22.50 per bracket
         return 157.50 + bracket * 22.50;
     }
+
     private double computePhilHealth(double basicSalary) {
         double rate = 0.03;
         double employeeShareRate = rate / 2.0;
-
-        // Salary between 10,000 and 60,000
         if (basicSalary < 10000) basicSalary = 10000;
         else if (basicSalary > 60000) basicSalary = 60000;
-
         return basicSalary * employeeShareRate;
     }
 
     private double computePagIBIG(double basicSalary) {
         double contributionRate;
-
         if (basicSalary >= 1000 && basicSalary <= 1500) {
             contributionRate = 0.01;
         } else if (basicSalary > 1500) {
@@ -108,6 +100,28 @@ public class Payroll {
         System.out.printf("Total Deductions: %.2f\n", sss + philHealth + pagIbig + tax);
         System.out.printf("Net Salary: %.2f\n", netSalary);
         System.out.println("========================");
+    }
+
+    // Getters for GUI to access the payroll deductions and salaries
+
+    public double getGrossSalary() {
+        return grossSalary;
+    }
+
+    public double getSSS() {
+        return sss;
+    }
+
+    public double getPhilHealth() {
+        return philHealth;
+    }
+
+    public double getPagIBIG() {
+        return pagIbig;
+    }
+
+    public double getTax() {
+        return tax;
     }
 
     public double getNetSalary() {
