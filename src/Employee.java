@@ -19,6 +19,8 @@ public class Employee {
     private Compensation pay;
     private List<Attendance> attendanceRecords;
 
+
+
     public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
         this.name = name;
@@ -32,6 +34,10 @@ public class Employee {
 
     public int getEmployeeNumber() {
         return employeeNumber;
+    }
+
+    public GovernmentID getGovernmentId() {
+        return id;
     }
 
     public String getBirthday() {

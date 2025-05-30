@@ -17,6 +17,7 @@ public class Job {
         this.position = position;
     }
 
+
     public String getSupervisor() {
         return supervisor;
     }

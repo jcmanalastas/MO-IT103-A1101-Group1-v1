@@ -5,7 +5,9 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 
 public class GUI extends JFrame {
     private JPanel main;
@@ -18,6 +20,10 @@ public class GUI extends JFrame {
     private JLabel lblEmpName1;
     private JLabel lblEmpNum1;
     private JLabel lblBirthday1;
+    private JTable tblEmployees;
+    private JButton btnViewAll;
+    private JButton btnViewEmployee;
+    private JButton btnAddEmployee;
 
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
     private static Map<Integer, Map<LocalDate, Double>> attendanceMap = new HashMap<>();
@@ -30,7 +36,7 @@ public class GUI extends JFrame {
         setTitle("MotorPH Payroll System");
         setContentPane(main);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1500, 400);
+        setSize(1000, 400);
         setLocationRelativeTo(null);
         createTable();
         Attendance.loadAttendanceFromCSV();
@@ -113,8 +119,51 @@ public class GUI extends JFrame {
                 }
             }
         });
-    }
+        btnViewAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Employee> employees = csvLoader.getAllEmployees();
 
+                DefaultTableModel model = new DefaultTableModel(
+                        new String[]{"ID", "Name", "SSS No.", "PhilHealth No.", "TIN", "Pag-ibig No."}, 0
+                );
+
+                for (Employee emp : employees) {
+                    model.addRow(new Object[]{
+                            emp.getEmployeeNumber(),
+                            emp.getFullName(),
+                            emp.getGovernmentId().getSss(),
+                            emp.getGovernmentId().getPhilhealth(),
+                            emp.getGovernmentId().getTin(),
+                            emp.getGovernmentId().getPagibig(),
+                    });
+                }
+
+                tblEmployees.setModel(model);
+            }
+        });
+
+        btnViewEmployee.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = tblEmployees.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select an employee.");
+                    return;
+                }
+                int empId = (int) tblEmployees.getValueAt(selectedRow, 0);
+                Employee emp = csvLoader.getEmployee(empId);
+                if (emp == null) {
+                    JOptionPane.showMessageDialog(null, "Selected employee not found.");
+                    return;
+                }
+                new ViewEmployeeFrame(emp);
+            }
+        });
+        btnAddEmployee.addActionListener(e -> {
+            new NewEmployeeFrame(csvLoader, tblEmployees);
+        });
+    }
 
     private void createTable() {
         txtPayslip.setModel(new DefaultTableModel(

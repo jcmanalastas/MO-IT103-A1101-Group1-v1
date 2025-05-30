@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Attendance {
-    // Map<EmployeeID, Map<Date, WorkHours>>
     private static Map<Integer, Map<LocalDate, Double>> attendanceMap = new HashMap<>();
 
     private static final String CSV_FILE = "src/AttendanceRecords.csv";
@@ -47,7 +46,6 @@ public class Attendance {
         return new LocalDate[] { fromDate, toDate };
     }
 
-    // Load CSV Data into nested Map
     public static void loadAttendanceFromCSV() {
         try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE))) {
             String line;
@@ -56,7 +54,7 @@ public class Attendance {
             while ((line = br.readLine()) != null) {
                 if (firstRow) {
                     firstRow = false;
-                    continue; // Skip header
+                    continue;
                 }
 
                 String[] values = line.split(",");
@@ -77,7 +75,6 @@ public class Attendance {
 
     }
 
-    // Add or accumulate attendance hours per employee per date
     public static void addAttendanceRecord(int employeeID, LocalDate date, LocalTime timeIn, LocalTime timeOut) {
         double workHours = computeWorkHours(timeIn, timeOut);
 
@@ -93,7 +90,6 @@ public class Attendance {
         return Duration.between(timeIn, timeOut).toMinutes() / 60.0;
     }
 
-    // Get total work hours for employee in a date range (inclusive)
     public static double getTotalWorkHours(int employeeID, LocalDate fromDate, LocalDate toDate) {
         if (!attendanceMap.containsKey(employeeID)) {
             return 0.0;
@@ -112,7 +108,6 @@ public class Attendance {
         return totalHours;
     }
 
-    // Parses date string with validation
     public static LocalDate parseDate(String dateStr) {
         try {
             return LocalDate.parse(dateStr, DATE_FORMATTER);
@@ -122,7 +117,6 @@ public class Attendance {
         }
     }
 
-    // Parses time string with validation
     public static LocalTime parseTime(String timeStr) {
         try {
             return LocalTime.parse(timeStr, TIME_FORMATTER);
@@ -131,7 +125,6 @@ public class Attendance {
         }
     }
 
-    // Parses user input date with message on failure
     public static LocalDate parseDateFromInput(String dateStr) {
         try {
             return LocalDate.parse(dateStr, DATE_FORMATTER);

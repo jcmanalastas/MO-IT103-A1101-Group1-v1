@@ -6,9 +6,16 @@ import java.util.*;
 public class MotorPHCSVLoader {
 
     private Map<Integer, Employee> employeeMap = new HashMap<>();
+    private String csvFilePath; // Store path for reuse
 
     public MotorPHCSVLoader(String filename) {
+        this.csvFilePath = filename;
         loadEmployeesFromCSV(filename);
+    }
+
+    public void reload() {
+        employeeMap.clear();
+        loadEmployeesFromCSV("src/Data.csv"); // Or use a variable if you have one
     }
 
     public Employee getEmployee(int employeeID) {
@@ -34,30 +41,26 @@ public class MotorPHCSVLoader {
 
                 int employeeNumber = Integer.parseInt(fields.get(0).trim());
 
-                // Name
+                // Person
                 String firstName = fields.get(2).trim();
                 String lastName = fields.get(1).trim();
                 Person person = new Person(firstName, lastName);
-
-                // Birthday
                 String birthday = fields.get(3).trim();
 
-                // Contact
-                String phone = fields.get(5).trim();
+                // ContactInfo
                 String address = fields.get(4).trim();
+                String phone = fields.get(5).trim();
                 ContactInfo contact = new ContactInfo(address, phone);
 
-                // Government ID
+                // GovernmentID
                 String sss = fields.get(6).trim();
                 String philhealth = fields.get(7).trim();
-                String pagibig = fields.get(9).trim();
                 String tin = fields.get(8).trim();
+                String pagibig = fields.get(9).trim();
                 GovernmentID govID = new GovernmentID(sss, philhealth, pagibig, tin);
 
-                // Status
+                // Employment
                 String status = fields.get(10).trim();
-
-                // Job
                 String positionTitle = fields.get(11).trim();
                 String supervisor = fields.get(12).trim().equalsIgnoreCase("N/A") ? "None" : fields.get(12).trim();
                 Job job = new Job(positionTitle, supervisor);
@@ -71,7 +74,7 @@ public class MotorPHCSVLoader {
                 double hourlyRate = tryParseDouble(fields.get(18));
                 Compensation comp = new Compensation(basicSalary, riceSubsidy, phoneAllowance, clothingAllowance, hourlyRate, semiGross);
 
-                // Employee object
+                // Create and store Employee
                 Employee employee = new Employee(employeeNumber, person, birthday, contact, govID, status, job, comp);
                 employeeMap.put(employeeNumber, employee);
             }
@@ -82,7 +85,12 @@ public class MotorPHCSVLoader {
         }
     }
 
-    // Safely parse double values after removing commas
+    // Return all employee records loaded in memory
+    public List<Employee> getAllEmployees() {
+        return new ArrayList<>(employeeMap.values());
+    }
+
+    // Safely parse doubles
     private double tryParseDouble(String value) {
         try {
             return Double.parseDouble(value.replace(",", "").trim());
@@ -91,7 +99,7 @@ public class MotorPHCSVLoader {
         }
     }
 
-    // Basic CSV parser that handles quoted fields with commas
+    // Basic CSV parser that respects quoted commas
     private List<String> splitCSV(String line) {
         List<String> result = new ArrayList<>();
         StringBuilder current = new StringBuilder();
