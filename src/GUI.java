@@ -67,8 +67,7 @@ public class GUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "Employee not found");
                         return;
                     }
-                    // Get selected month from combo box
-                    String monthName = cmbPayPeriod.getSelectedItem().toString(); // e.g., "June"
+                    String monthName = cmbPayPeriod.getSelectedItem().toString();
                     int year = 2024;
                     int month = java.time.Month.valueOf(monthName.toUpperCase()).getValue();
 
@@ -82,20 +81,16 @@ public class GUI extends JFrame {
                         toDate = LocalDate.of(year, month, java.time.YearMonth.of(year, month).lengthOfMonth());
                     }
 
-                    // Compute total hours from attendance
                     double totalHours = Attendance.getTotalWorkHours(empNum, fromDate, toDate);
 
-                    // Process payroll
                     Payroll payroll = new Payroll();
                     payroll.processPayroll(employee, fromDate, toDate, totalHours);
 
 
-                    // Display employee info
                     lblEmpNum1.setText("Employee Number: " + empNum);
                     lblEmpName1.setText("Employee Name: " + employee.getFullName());
                     lblBirthday1.setText("Birthday: " + employee.getBirthday());
 
-                    // Fill payslip table
                     DefaultTableModel model = (DefaultTableModel) txtPayslip.getModel();
                     model.setRowCount(0); // Clear previous data
                     model.addRow(new Object[]{

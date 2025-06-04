@@ -1,5 +1,6 @@
 import javax.swing.*;
-import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
@@ -19,14 +20,19 @@ public class ViewEmployeeFrame extends JFrame {
         setSize(500, 500);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // Populate month dropdown
         cmbMonth.setModel(new DefaultComboBoxModel<>(new String[]{
                 "June", "July", "August", "September", "October", "November", "December"
         }));
 
-        btnCompute.addActionListener(e -> computeSalary());
+        btnCompute.addActionListener(new ComputeButtonListener());
 
         setVisible(true);
+    }
+
+    private class ComputeButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            computeSalary();
+        }
     }
 
     private void computeSalary() {

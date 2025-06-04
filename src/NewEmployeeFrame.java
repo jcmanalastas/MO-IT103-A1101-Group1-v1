@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,7 +34,13 @@ public class NewEmployeeFrame extends JFrame {
         setSize(400, 600);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        btnSubmit.addActionListener(e -> {
+        btnSubmit.addActionListener(new SubmitButtonListener());
+
+        setVisible(true);
+    }
+
+    private class SubmitButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
             try {
                 int id = Integer.parseInt(txtId.getText().trim());
                 String line = String.join(",",
@@ -48,17 +56,23 @@ public class NewEmployeeFrame extends JFrame {
                         txtPagIbig.getText().trim(),
                         "Active",
                         txtPosition.getText().trim(),
-                        "N/A", "0", "0", "0", "0", // default allowances
-                        "0", // semi-gross
+                        "N/A", "0", "0", "0", "0",
+                        "0",
                         txtRate.getText().trim()
                 );
 
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/Data.csv", true))) {
+                BufferedWriter bw = null;
+                try {
+                    bw = new BufferedWriter(new FileWriter("src/Data.csv", true));
                     bw.write(line);
                     bw.newLine();
+                } finally {
+                    if (bw != null) {
+                        bw.close();
+                    }
                 }
 
-                loader.reload(); // refresh in memory
+                loader.reload();
 
                 DefaultTableModel model = (DefaultTableModel) employeeTable.getModel();
                 model.addRow(new Object[]{
@@ -70,13 +84,11 @@ public class NewEmployeeFrame extends JFrame {
                         txtPagIbig.getText()
                 });
 
-                JOptionPane.showMessageDialog(this, "Employee added!");
+                JOptionPane.showMessageDialog(NewEmployeeFrame.this, "Employee added!");
                 dispose();
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+                JOptionPane.showMessageDialog(NewEmployeeFrame.this, "Error: " + ex.getMessage());
             }
-        });
-
-        setVisible(true);
+        }
     }
 }
