@@ -121,7 +121,12 @@ public class GUI extends JFrame {
 
                 DefaultTableModel model = new DefaultTableModel(
                         new String[]{"ID", "Name", "SSS No.", "PhilHealth No.", "TIN", "Pag-ibig No."}, 0
-                );
+                ){
+                    @Override
+                    public boolean isCellEditable(int row, int column){
+                        return false;
+                    }
+                };
 
                 for (Employee emp : employees) {
                     model.addRow(new Object[]{
@@ -163,7 +168,12 @@ public class GUI extends JFrame {
     private void createTable() {
         txtPayslip.setModel(new DefaultTableModel(
                 null,
-                new String[]{"Pay Start", "Pay End", "Total Hours", "Gross Salary", "SSS", "PhilHealth", "Pag-IBIG", "Tax", "Total Deductions", "Net Pay"}));
+                new String[]{"Pay Start", "Pay End", "Total Hours", "Gross Salary", "SSS", "PhilHealth", "Pag-IBIG", "Tax", "Total Deductions", "Net Pay"}){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        });
     }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

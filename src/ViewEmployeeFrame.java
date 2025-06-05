@@ -9,6 +9,7 @@ public class ViewEmployeeFrame extends JFrame {
     private JComboBox<String> cmbMonth;
     private JButton btnCompute;
     private JTextArea txtDetails;
+    private JLabel lblSelectMonth;
 
     private Employee emp;
 
@@ -18,7 +19,7 @@ public class ViewEmployeeFrame extends JFrame {
         setContentPane(mainPanel);
         setTitle("Employee Details & Salary");
         setSize(500, 500);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         cmbMonth.setModel(new DefaultComboBoxModel<>(new String[]{
                 "June", "July", "August", "September", "October", "November", "December"
@@ -36,7 +37,7 @@ public class ViewEmployeeFrame extends JFrame {
     }
 
     private void computeSalary() {
-        int month = cmbMonth.getSelectedIndex() + 1;
+        int month = cmbMonth.getSelectedIndex() + 6;
         int year = 2024;
 
         LocalDate from = LocalDate.of(year, month, 1);
@@ -46,18 +47,18 @@ public class ViewEmployeeFrame extends JFrame {
         Payroll payroll = new Payroll();
         payroll.processPayroll(emp, from, to, hours);
 
-        txtDetails.setText("EMPLOYEE DETAILS\n"
+        txtDetails.setText("Employee Details\n\n"
                 + "Name: " + emp.getFullName() + "\n"
                 + "Birthday: " + emp.getBirthday() + "\n"
                 + "-----------------------------------\n"
-                + "Worked Hours: " + hours + "\n\n"
-                + "Gross Salary: " + payroll.getGrossSalary() + "\n"
-                + "SSS: " + payroll.getSss() + "\n"
-                + "PhilHealth: " + payroll.getPhilHealth() + "\n"
-                + "Pag-IBIG: " + payroll.getPagIbig() + "\n"
-                + "Tax: " + payroll.getTax() + "\n"
+                + "Worked Hours: " + String.format("%.2f", hours) + "\n"
+                + "Gross Salary: " + String.format("%,.2f", payroll.getGrossSalary()) + "\n"
+                + "SSS: " + String.format("%,.2f", payroll.getSss()) + "\n"
+                + "PhilHealth: " + String.format("%,.2f", payroll.getPhilHealth()) + "\n"
+                + "Pag-IBIG: " + String.format("%,.2f", payroll.getPagIbig()) + "\n"
+                + "Tax: " + String.format("%,.2f", payroll.getTax()) + "\n"
                 + "-----------------------------------\n"
-                + "Total Deductions: " + (payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n"
-                + "Net Salary: " + payroll.getNetSalary());
+                + "Total Deductions: " + String.format("%,.2f", payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n"
+                + "Net Salary: " + String.format("%,.2f", payroll.getNetSalary()));
     }
 }
