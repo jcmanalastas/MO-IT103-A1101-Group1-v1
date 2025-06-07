@@ -24,6 +24,8 @@ public class GUI extends JFrame {
     private JButton btnViewAll;
     private JButton btnViewEmployee;
     private JButton btnAddEmployee;
+    private JButton btnUpdate;
+    private JButton btnDelete;
 
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
     private static Map<Integer, Map<LocalDate, Double>> attendanceMap = new HashMap<>();
@@ -162,6 +164,45 @@ public class GUI extends JFrame {
         });
         btnAddEmployee.addActionListener(e -> {
             new NewEmployeeFrame(csvLoader, tblEmployees);
+        });
+
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = tblEmployees.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select an employee to update.");
+                    return;
+                }
+
+                int empId = (int) tblEmployees.getValueAt(selectedRow, 0);
+                Employee emp = csvLoader.getEmployee(empId);
+
+                if (emp == null) {
+                    JOptionPane.showMessageDialog(null, "Selected employee not found.");
+                    return;
+                }
+
+            }
+        });
+        btnDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = tblEmployees.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(null, "Please select an employee to delete.");
+                    return;
+                }
+
+                int confirm = JOptionPane.showConfirmDialog(null,
+                        "Are you sure you want to delete this employee?",
+                        "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (confirm != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
         });
     }
 
