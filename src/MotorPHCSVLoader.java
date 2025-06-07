@@ -6,7 +6,8 @@ import java.util.*;
 public class MotorPHCSVLoader {
 
     private Map<Integer, Employee> employeeMap = new HashMap<>();
-    private String csvFilePath; // Store path for reuse
+    private String csvFilePath;// Store path for reuse
+    private static final String CSV_HEADER = "employeeNumber,lastName,firstName,birthday,address,phone,sss,philhealth,tin,pagibig,status,positionTitle,supervisor,basicSalary,riceSubsidy,phoneAllowance,clothingAllowance,semiMonthlyRate,hourlyRate";
 
     public MotorPHCSVLoader(String filename) {
         this.csvFilePath = filename;
@@ -120,5 +121,59 @@ public class MotorPHCSVLoader {
 
         result.add(current.toString().trim());
         return result;
+    }
+
+    public boolean updateEmployee(Employee updatedEmployee) {
+        try {
+            employeeMap.put(updatedEmployee.getEmployeeNumber(), updatedEmployee);
+            return saveAllEmployees();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteEmployee(int empId) {
+        try {
+            employeeMap.remove(empId);
+            return saveAllEmployees();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean saveAllEmployees() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvFilePath))) {
+            writer.write("employeeNumber,lastName,firstName,birthday,address,phone,sss,philhealth,tin,pagibig,status,positionTitle,supervisor,basicSalary,riceSubsidy,phoneAllowance,clothingAllowance,semiMonthlyRate,hourlyRate\n");
+
+            for (Employee emp : employeeMap.values()) {
+                writer.write(String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
+                        emp.getEmployeeNumber(),
+                        emp.getPerson().getLastName(),
+                        emp.getPerson().getFirstName(),
+                        emp.getBirthday(),
+                        emp.getContactInfo().getAddress(),
+                        emp.getContactInfo().getPhone(),
+                        emp.getGovernmentId().getSss(),
+                        emp.getGovernmentId().getPhilhealth(),
+                        emp.getGovernmentId().getTin(),
+                        emp.getGovernmentId().getPagibig(),
+                        emp.getStatus(),
+                        emp.getJob().getPositionTitle(),
+                        emp.getJob().getSupervisor(),
+                        emp.getCompensation().getBasicSalary(),
+                        emp.getCompensation().getRiceSubsidy(),
+                        emp.getCompensation().getPhoneAllowance(),
+                        emp.getCompensation().getClothingAllowance(),
+                        emp.getCompensation().getSemiMonthlyRate(),
+                        emp.getCompensation().getHourlyRate()
+                ));
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
