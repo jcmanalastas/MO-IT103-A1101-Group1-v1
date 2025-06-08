@@ -24,6 +24,7 @@ public class GUI extends JFrame {
     private JButton btnViewAll;
     private JButton btnViewEmployee;
     private JButton btnAddEmployee;
+    private JButton btnUpdateEmp;
 
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
     private static Map<Integer, Map<LocalDate, Double>> attendanceMap = new HashMap<>();
@@ -162,6 +163,27 @@ public class GUI extends JFrame {
         });
         btnAddEmployee.addActionListener(e -> {
             new NewEmployeeFrame(csvLoader, tblEmployees);
+        });
+        btnUpdateEmp.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = tblEmployees.getSelectedRow();
+
+                if(selectedRow == -1){
+                    JOptionPane.showMessageDialog(null,"Please select an employee");
+                    return;
+                }
+
+                int empID = (int) tblEmployees.getValueAt(selectedRow,0);
+                Employee emp = csvLoader.getEmployee(empID);
+
+                if(emp == null){
+                    JOptionPane.showMessageDialog(null,"Employee not found");
+                    return;
+                }
+
+                new UpdateEmployee(emp,csvLoader,tblEmployees);
+            }
         });
     }
 

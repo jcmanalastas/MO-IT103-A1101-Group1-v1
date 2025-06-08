@@ -1,5 +1,3 @@
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,19 +7,18 @@ import java.util.List;
  */
 
 public class Employee {
-    private int employeeNumber; // Employee ID
-    private Person name; // Employee Name under Person class
+    private int employeeNumber;
+    private Person name;
     private String birthday;
     private ContactInfo contact;
     private GovernmentID id;
     private String status;
     private Job position;
     private Compensation pay;
-    private List<Attendance> attendanceRecords;
 
-
-
-    public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact, GovernmentID id, String status, Job position, Compensation pay) {
+    // Constructor
+    public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact,
+                    GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
         this.name = name;
         this.birthday = birthday;
@@ -32,39 +29,44 @@ public class Employee {
         this.pay = pay;
     }
 
+    // Getters
     public int getEmployeeNumber() {
         return employeeNumber;
     }
 
-    public GovernmentID getGovernmentId() {
-        return id;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public ContactInfo getContact() {
-        return contact; }
-
-    public Job getPosition() {
-        return position;
+    public Person getName() {
+        return name;
     }
 
     public String getFullName() {
         return name.getFirstName() + " " + name.getLastName();
     }
 
-    public Compensation getPay(){
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public ContactInfo getContact() {
+        return contact;
+    }
+
+    public GovernmentID getGovernmentId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Job getPosition() {
+        return position;
+    }
+
+    public Compensation getPay() {
         return pay;
     }
 
-    public double getMonthlySalary(){
+    public double getMonthlySalary() {
         return pay.getMonthlyGrossSalary();
     }
-
 }
