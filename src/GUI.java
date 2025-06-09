@@ -161,8 +161,11 @@ public class GUI extends JFrame {
                 new ViewEmployeeFrame(emp);
             }
         });
-        btnAddEmployee.addActionListener(e -> {
-            new NewEmployeeFrame(csvLoader, tblEmployees);
+        btnAddEmployee.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new NewEmployeeFrame(csvLoader, tblEmployees);
+            }
         });
         btnUpdateEmp.addActionListener(new ActionListener() {
             @Override

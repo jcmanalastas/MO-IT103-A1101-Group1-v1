@@ -31,7 +31,7 @@ public class NewEmployeeFrame extends JFrame {
 
         setContentPane(mainPanel);
         setTitle("New Employee");
-        setSize(400, 600);
+        setSize(400, 400);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         btnSubmit.addActionListener(new SubmitButtonListener());
