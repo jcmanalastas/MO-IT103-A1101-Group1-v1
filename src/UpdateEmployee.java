@@ -23,6 +23,28 @@ public class UpdateEmployee extends JFrame {
     private JLabel lblPhilHealth;
     private JLabel lblTin;
     private JLabel lblPagibig;
+    private JTextField txtBirthday;
+    private JLabel lblBirthday;
+    private JTextField txtAddress;
+    private JLabel lblAddress;
+    private JTextField txtPhoneNumber;
+    private JLabel lblPhone;
+    private JTextField txtStatus;
+    private JLabel lblStatus;
+    private JLabel lblPosition;
+    private JTextField txtPosition;
+    private JTextField txtSupervisor;
+    private JLabel lblSupervisor;
+    private JLabel lblBasicSalary;
+    private JTextField txtBasicSalary;
+    private JTextField txtRiceSubsidy;
+    private JTextField txtPhoneAllowance;
+    private JTextField txtClothingAllowance;
+    private JLabel lblClothingAllowance;
+    private JTextField txtGrossSemi;
+    private JLabel lblSemiGross;
+    private JTextField txtHourlyRate;
+    private JLabel lblHourlyRate;
 
     private Employee originalEmp;
     private int employeeRowIndex;
@@ -33,7 +55,7 @@ public class UpdateEmployee extends JFrame {
 
         setTitle("Update Employee");
         setContentPane(UpdateEmp);
-        setSize(400, 400);
+        setSize(450, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
@@ -41,10 +63,23 @@ public class UpdateEmployee extends JFrame {
         // Fill in existing data
         txtFirstName.setText(emp.getName().getFirstName());
         txtLastName.setText(emp.getName().getLastName());
+        txtBirthday.setText(emp.getBirthday());
+        txtAddress.setText(emp.getContact().getAddress());
+        txtPhoneNumber.setText(emp.getContact().getPhone());
+        txtStatus.setText(emp.getStatus());
+        txtPosition.setText(emp.getPosition().getPosition());
+        txtSupervisor.setText(emp.getPosition().getSupervisor());
+        txtBasicSalary.setText(Double.toString(emp.getPay().getBasicSalary()));
+        txtRiceSubsidy.setText(Double.toString(emp.getPay().getRiceSubsidy()));
+        txtPhoneAllowance.setText(Double.toString(emp.getPay().getPhoneAllowance()));
+        txtClothingAllowance.setText(Double.toString(emp.getPay().getClothingAllowance()));
+        txtGrossSemi.setText(Double.toString(emp.getPay().getSemiGross()));
+        txtHourlyRate.setText(Double.toString(emp.getPay().calculateHourlyRate()));
         txtSss.setText(emp.getGovernmentId().getSss());
         txtPhilHealth.setText(emp.getGovernmentId().getPhilhealth());
         txtTin.setText(emp.getGovernmentId().getTin());
         txtPagIBIG.setText(emp.getGovernmentId().getPagibig());
+
 
         employeeRowIndex = findRowIndexByEmployeeNumber(table, emp.getEmployeeNumber());
 
@@ -57,10 +92,23 @@ public class UpdateEmployee extends JFrame {
                     if (employeeRowIndex >= 0) {
                         int firstNameCol = 2;
                         int lastNameCol = 1;
-                        int sssCol = 7;
-                        int philhealthCol = 8;
-                        int tinCol = 9;
-                        int pagibigCol = 10;
+                        int birthdayCol =3;
+                        int addressCol = 4;
+                        int phoneNumberCol = 5;
+                        int statusCol = 10;
+                        int positionCol = 11;
+                        int supervisorCol = 12;
+                        int basicCol = 13;
+                        int riceCol = 14;
+                        int phoneAllowanceCol = 15;
+                        int clothingAllowance = 16;
+                        int grossSemi = 17;
+                        int hourlyRateCol = 18;
+                        int sssCol = 6;
+                        int philhealthCol = 7;
+                        int tinCol = 8;
+                        int pagibigCol = 9;
+
 
                         model.setValueAt(txtFirstName.getText().trim(), employeeRowIndex, firstNameCol);
                         model.setValueAt(txtLastName.getText().trim(), employeeRowIndex, lastNameCol);
@@ -68,6 +116,18 @@ public class UpdateEmployee extends JFrame {
                         model.setValueAt(txtPhilHealth.getText().trim(), employeeRowIndex, philhealthCol);
                         model.setValueAt(txtTin.getText().trim(), employeeRowIndex, tinCol);
                         model.setValueAt(txtPagIBIG.getText().trim(), employeeRowIndex, pagibigCol);
+                        model.setValueAt(txtBirthday.getText().trim(),employeeRowIndex,birthdayCol);
+                        model.setValueAt(txtAddress.getText().trim(),employeeRowIndex,addressCol);
+                        model.setValueAt(txtPhoneNumber.getText().trim(),employeeRowIndex,phoneNumberCol);
+                        model.setValueAt(txtStatus.getText().trim(),employeeRowIndex,statusCol);
+                        model.setValueAt(txtPosition.getText().trim(),employeeRowIndex,positionCol);
+                        model.setValueAt(txtSupervisor.getText().trim(),employeeRowIndex,supervisorCol);
+                        model.setValueAt(txtBasicSalary.getText().trim(),employeeRowIndex,basicCol);
+                        model.setValueAt(txtRiceSubsidy.getText().trim(),employeeRowIndex,riceCol);
+                        model.setValueAt(txtPhoneAllowance.getText().trim(),employeeRowIndex,phoneAllowanceCol);
+                        model.setValueAt(txtClothingAllowance.getText().trim(),employeeRowIndex,clothingAllowance);
+                        model.setValueAt(txtGrossSemi.getText().trim(),employeeRowIndex,grossSemi);
+                        model.setValueAt(txtHourlyRate.getText().trim(),employeeRowIndex,hourlyRateCol);
 
                         writeTableToCSV(table);
                         loader.reload();
