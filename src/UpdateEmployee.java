@@ -74,7 +74,7 @@ public class UpdateEmployee extends JFrame {
         txtPhoneAllowance.setText(Double.toString(emp.getPay().getPhoneAllowance()));
         txtClothingAllowance.setText(Double.toString(emp.getPay().getClothingAllowance()));
         txtGrossSemi.setText(Double.toString(emp.getPay().getSemiGross()));
-        txtHourlyRate.setText(Double.toString(emp.getPay().calculateHourlyRate()));
+        txtHourlyRate.setText(String.format("%.2f", emp.getPay().calculateHourlyRate()));
         txtSss.setText(emp.getGovernmentId().getSss());
         txtPhilHealth.setText(emp.getGovernmentId().getPhilhealth());
         txtTin.setText(emp.getGovernmentId().getTin());
