@@ -74,7 +74,7 @@ public class NewEmployeeFrame extends JFrame {
 
                 loader.reload();
 
-                DefaultTableModel model = (DefaultTableModel) employeeTable.getModel();
+                /** DefaultTableModel model = (DefaultTableModel) employeeTable.getModel();
                 model.addRow(new Object[]{
                         id,
                         txtFirstName.getText() + " " + txtLastName.getText(),
@@ -82,7 +82,7 @@ public class NewEmployeeFrame extends JFrame {
                         txtPhilHealth.getText(),
                         txtTIN.getText(),
                         txtPagIbig.getText()
-                });
+                }); **/
 
                 JOptionPane.showMessageDialog(NewEmployeeFrame.this, "Employee added!");
                 dispose();

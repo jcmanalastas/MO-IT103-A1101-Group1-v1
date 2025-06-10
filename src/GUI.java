@@ -143,16 +143,16 @@ public class GUI extends JFrame {
                 tblEmployees.setModel(model);
             }
         });
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = tblEmployees.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(null, "Please select an employee.");
+                return;
+            }
+            int empId = (int) tblEmployees.getValueAt(selectedRow,
 
         btnViewEmployee.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = tblEmployees.getSelectedRow();
-                if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(null, "Please select an employee.");
-                    return;
-                }
-                int empId = (int) tblEmployees.getValueAt(selectedRow, 0);
+            @Override 0);
                 Employee emp = csvLoader.getEmployee(empId);
                 if (emp == null) {
                     JOptionPane.showMessageDialog(null, "Selected employee not found.");
