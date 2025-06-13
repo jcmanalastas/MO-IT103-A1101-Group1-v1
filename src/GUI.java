@@ -41,7 +41,7 @@ public class GUI extends JFrame {
         setTitle("MotorPH Payroll System");
         setContentPane(main);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1500, 400);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
 
         createTable(); // Set up payslip table columns
