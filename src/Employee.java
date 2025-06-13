@@ -5,8 +5,8 @@ import java.util.List;
  * This shows employee personal details.
  * This also provides each employee's salary information
  */
-
 public class Employee {
+
     private int employeeNumber;
     private Person name;
     private String birthday;
@@ -16,7 +16,6 @@ public class Employee {
     private Job position;
     private Compensation pay;
 
-    // Constructor
     public Employee(int employeeNumber, Person name, String birthday, ContactInfo contact,
                     GovernmentID id, String status, Job position, Compensation pay) {
         this.employeeNumber = employeeNumber;
@@ -70,11 +69,12 @@ public class Employee {
         return pay.getMonthlyGrossSalary();
     }
 
+    // Setters
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
-
 }
