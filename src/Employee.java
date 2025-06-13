@@ -69,4 +69,12 @@ public class Employee {
     public double getMonthlySalary() {
         return pay.getMonthlyGrossSalary();
     }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

@@ -49,11 +49,13 @@ public class UpdateEmployee extends JFrame {
     private JLabel lblRiceSubsidy;
     private JLabel lblPhoneAllowance;
 
+    // Supporting data and callbacks
     private Employee originalEmp;
     private MotorPHCSVLoader csvLoader;
     private JTable employeeTable;
     private GUI.UpdateEmployeeCallback callback;
 
+    // Constructor (with optional callback)
     public UpdateEmployee(Employee emp, MotorPHCSVLoader loader, JTable table) {
         this(emp, loader, table, null);
     }
@@ -64,6 +66,7 @@ public class UpdateEmployee extends JFrame {
         this.employeeTable = table;
         this.callback = callback;
 
+        // New Frame
         setTitle("Update Employee");
         setContentPane(UpdateEmp);
         setSize(450, 700);
@@ -71,7 +74,7 @@ public class UpdateEmployee extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
 
-        // Fill in existing data
+        // Load current employee data into form
         populateFields(emp);
 
         updateButton.addActionListener(new ActionListener() {
@@ -108,11 +111,12 @@ public class UpdateEmployee extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Cancel button
                 dispose();
             }
         });
     }
-
+    // Populate all fields with current employee data
     private void populateFields(Employee emp) {
         txtFirstName.setText(emp.getName().getFirstName());
         txtLastName.setText(emp.getName().getLastName());
@@ -133,7 +137,7 @@ public class UpdateEmployee extends JFrame {
         txtTin.setText(emp.getGovernmentId().getTin());
         txtPagIBIG.setText(emp.getGovernmentId().getPagibig());
     }
-
+    // Locate and update the specific employee record in CSV
     private void updateEmployeeInCSV() throws IOException {
         // Read all employees from CSV
         List<Employee> allEmployees = csvLoader.getAllEmployees();
@@ -157,16 +161,33 @@ public class UpdateEmployee extends JFrame {
         // Write all employees back to CSV
         writeAllEmployeesToCSV(allEmployees);
     }
-
+    // Apply all values to the selected Employee
     private void updateEmployeeObject(Employee emp) {
-        // Update the employee object with form values
-        // Note: This assumes your Employee class has setters or you can modify the objects
-        // You might need to adjust this based on your Employee class structure
-
-        // For now, we'll write directly to CSV since we don't know the exact Employee class structure
-        // This method would need to be adjusted based on your Employee class implementation
+        //Person
+        emp.getName().setFirstName(txtFirstName.getText().trim());
+        emp.getName().setLastName(txtLastName.getText().trim());
+        emp.setBirthday(txtBirthday.getText().trim());
+        //Contact
+        emp.getContact().setAddress(txtAddress.getText().trim());
+        emp.getContact().setPhone(txtPhoneNumber.getText().trim());
+        //Status
+        emp.setStatus(txtStatus.getText().trim());
+        //Position
+        emp.getPosition().setPosition(txtPosition.getText().trim());
+        emp.getPosition().setSupervisor(txtSupervisor.getText().trim());
+        //Payroll
+        emp.getPay().setBasicSalary(Double.parseDouble(txtBasicSalary.getText().trim()));
+        emp.getPay().setRiceSubsidy(Double.parseDouble(txtRiceSubsidy.getText().trim()));
+        emp.getPay().setPhoneAllowance(Double.parseDouble(txtPhoneAllowance.getText().trim()));
+        emp.getPay().setClothingAllowance(Double.parseDouble(txtClothingAllowance.getText().trim()));
+        emp.getPay().setSemiGross(Double.parseDouble(txtGrossSemi.getText().trim()));
+        //GovernmentID
+        emp.getGovernmentId().setSss(txtSss.getText().trim());
+        emp.getGovernmentId().setPhilhealth(txtPhilHealth.getText().trim());
+        emp.getGovernmentId().setTin(txtTin.getText().trim());
+        emp.getGovernmentId().setPagibig(txtPagIBIG.getText().trim());
     }
-
+    // Save all employees back into the CSV file
     private void writeAllEmployeesToCSV(List<Employee> employees) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/Data.csv"))) {
             // Write header
@@ -176,7 +197,7 @@ public class UpdateEmployee extends JFrame {
             // Write employee data
             for (Employee emp : employees) {
                 if (emp.getEmployeeNumber() == originalEmp.getEmployeeNumber()) {
-                    // Write updated data for this employee
+                    // Write updated data for employee
                     writeUpdatedEmployeeRow(bw);
                 } else {
                     // Write original data for other employees
@@ -189,7 +210,7 @@ public class UpdateEmployee extends JFrame {
     private void writeUpdatedEmployeeRow(BufferedWriter bw) throws IOException {
         StringBuilder sb = new StringBuilder();
 
-        // Build CSV row with updated values
+        // Write updated employee row based on text fields
         String[] values = {
                 String.valueOf(originalEmp.getEmployeeNumber()),
                 txtLastName.getText().trim(),
