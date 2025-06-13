@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class UpdateEmployee extends JFrame {
     private JPanel UpdateEmp;
@@ -45,22 +46,74 @@ public class UpdateEmployee extends JFrame {
     private JLabel lblSemiGross;
     private JTextField txtHourlyRate;
     private JLabel lblHourlyRate;
+    private JLabel lblRiceSubsidy;
+    private JLabel lblPhoneAllowance;
 
     private Employee originalEmp;
-    private int employeeRowIndex;
+    private MotorPHCSVLoader csvLoader;
     private JTable employeeTable;
+    private GUI.UpdateEmployeeCallback callback;
 
     public UpdateEmployee(Employee emp, MotorPHCSVLoader loader, JTable table) {
+        this(emp, loader, table, null);
+    }
+
+    public UpdateEmployee(Employee emp, MotorPHCSVLoader loader, JTable table, GUI.UpdateEmployeeCallback callback) {
         this.originalEmp = emp;
+        this.csvLoader = loader;
+        this.employeeTable = table;
+        this.callback = callback;
 
         setTitle("Update Employee");
         setContentPane(UpdateEmp);
-        setSize(450, 600);
+        setSize(450, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
 
         // Fill in existing data
+        populateFields(emp);
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Validate required fields
+                    if (txtFirstName.getText().trim().isEmpty() ||
+                            txtLastName.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(UpdateEmployee.this,
+                                "First Name and Last Name are required!");
+                        return;
+                    }
+
+                    // Update the CSV file directly
+                    updateEmployeeInCSV();
+
+                    // Refresh the table if callback is provided
+                    if (callback != null) {
+                        callback.onEmployeeUpdated();
+                    }
+
+                    JOptionPane.showMessageDialog(UpdateEmployee.this, "Employee updated successfully!");
+                    dispose();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(UpdateEmployee.this,
+                            "Error updating employee: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+    }
+
+    private void populateFields(Employee emp) {
         txtFirstName.setText(emp.getName().getFirstName());
         txtLastName.setText(emp.getName().getLastName());
         txtBirthday.setText(emp.getBirthday());
@@ -79,120 +132,139 @@ public class UpdateEmployee extends JFrame {
         txtPhilHealth.setText(emp.getGovernmentId().getPhilhealth());
         txtTin.setText(emp.getGovernmentId().getTin());
         txtPagIBIG.setText(emp.getGovernmentId().getPagibig());
-
-
-        employeeRowIndex = findRowIndexByEmployeeNumber(table, emp.getEmployeeNumber());
-
-        updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-                    if (employeeRowIndex >= 0) {
-                        int firstNameCol = 2;
-                        int lastNameCol = 1;
-                        int birthdayCol =3;
-                        int addressCol = 4;
-                        int phoneNumberCol = 5;
-                        int statusCol = 10;
-                        int positionCol = 11;
-                        int supervisorCol = 12;
-                        int basicCol = 13;
-                        int riceCol = 14;
-                        int phoneAllowanceCol = 15;
-                        int clothingAllowance = 16;
-                        int grossSemi = 17;
-                        int hourlyRateCol = 18;
-                        int sssCol = 6;
-                        int philhealthCol = 7;
-                        int tinCol = 8;
-                        int pagibigCol = 9;
-
-
-                        model.setValueAt(txtFirstName.getText().trim(), employeeRowIndex, firstNameCol);
-                        model.setValueAt(txtLastName.getText().trim(), employeeRowIndex, lastNameCol);
-                        model.setValueAt(txtSss.getText().trim(), employeeRowIndex, sssCol);
-                        model.setValueAt(txtPhilHealth.getText().trim(), employeeRowIndex, philhealthCol);
-                        model.setValueAt(txtTin.getText().trim(), employeeRowIndex, tinCol);
-                        model.setValueAt(txtPagIBIG.getText().trim(), employeeRowIndex, pagibigCol);
-                        model.setValueAt(txtBirthday.getText().trim(),employeeRowIndex,birthdayCol);
-                        model.setValueAt(txtAddress.getText().trim(),employeeRowIndex,addressCol);
-                        model.setValueAt(txtPhoneNumber.getText().trim(),employeeRowIndex,phoneNumberCol);
-                        model.setValueAt(txtStatus.getText().trim(),employeeRowIndex,statusCol);
-                        model.setValueAt(txtPosition.getText().trim(),employeeRowIndex,positionCol);
-                        model.setValueAt(txtSupervisor.getText().trim(),employeeRowIndex,supervisorCol);
-                        model.setValueAt(txtBasicSalary.getText().trim(),employeeRowIndex,basicCol);
-                        model.setValueAt(txtRiceSubsidy.getText().trim(),employeeRowIndex,riceCol);
-                        model.setValueAt(txtPhoneAllowance.getText().trim(),employeeRowIndex,phoneAllowanceCol);
-                        model.setValueAt(txtClothingAllowance.getText().trim(),employeeRowIndex,clothingAllowance);
-                        model.setValueAt(txtGrossSemi.getText().trim(),employeeRowIndex,grossSemi);
-                        model.setValueAt(txtHourlyRate.getText().trim(),employeeRowIndex,hourlyRateCol);
-
-                        writeTableToCSV(table);
-                        loader.reload();
-
-                        DefaultTableModel mainModel = (DefaultTableModel) employeeTable.getModel();
-                        mainModel.setRowCount(0);
-
-                        JOptionPane.showMessageDialog(UpdateEmployee.this, "Employee updated successfully!");
-                        dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(UpdateEmployee.this, "Employee not found in table.");
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(UpdateEmployee.this, "Error updating employee: " + ex.getMessage());
-                }
-            }
-        });
-
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
     }
 
-    private int findRowIndexByEmployeeNumber(JTable table, int empNum) {
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        for (int row = 0; row < model.getRowCount(); row++) {
-            Object val = model.getValueAt(row, 0);
-            if (val != null && val instanceof Integer && ((Integer) val) == empNum) {
-                return row;
-            }
-            if (val != null && val.toString().equals(String.valueOf(empNum))) {
-                return row;
+    private void updateEmployeeInCSV() throws IOException {
+        // Read all employees from CSV
+        List<Employee> allEmployees = csvLoader.getAllEmployees();
+
+        // Find and update the specific employee
+        boolean employeeFound = false;
+        for (int i = 0; i < allEmployees.size(); i++) {
+            Employee emp = allEmployees.get(i);
+            if (emp.getEmployeeNumber() == originalEmp.getEmployeeNumber()) {
+                // Update the employee object with new values
+                updateEmployeeObject(emp);
+                employeeFound = true;
+                break;
             }
         }
-        return -1;
+
+        if (!employeeFound) {
+            throw new RuntimeException("Employee not found in CSV file");
+        }
+
+        // Write all employees back to CSV
+        writeAllEmployeesToCSV(allEmployees);
     }
-    private void writeTableToCSV(JTable table) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter("src/Data.csv"));
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
 
-        for (int i = 0; i < model.getColumnCount(); i++) {
-            bw.write(model.getColumnName(i));
-            if (i < model.getColumnCount() - 1) {
-                bw.write(",");
-            }
-        }
-        bw.newLine();
+    private void updateEmployeeObject(Employee emp) {
+        // Update the employee object with form values
+        // Note: This assumes your Employee class has setters or you can modify the objects
+        // You might need to adjust this based on your Employee class structure
 
-        for (int row = 0; row < model.getRowCount(); row++) {
-            for (int col = 0; col < model.getColumnCount(); col++) {
-                Object value = model.getValueAt(row, col);
-                String cell = value == null ? "" : value.toString();
-                if (cell.contains(",")) {
-                    cell = "\"" + cell + "\"";
-                }
-                bw.write(cell);
-                if (col < model.getColumnCount() - 1) {
-                    bw.write(",");
-                }
-            }
+        // For now, we'll write directly to CSV since we don't know the exact Employee class structure
+        // This method would need to be adjusted based on your Employee class implementation
+    }
+
+    private void writeAllEmployeesToCSV(List<Employee> employees) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/Data.csv"))) {
+            // Write header
+            bw.write("Employee #,Last Name,First Name,Birthday,Address,Phone Number,SSS #,Philhealth #,TIN #,Pag-ibig #,Status,Position,Immediate Supervisor,Basic Salary,Rice Subsidy,Phone Allowance,Clothing Allowance,Gross Semi-monthly Rate,Hourly Rate");
             bw.newLine();
+
+            // Write employee data
+            for (Employee emp : employees) {
+                if (emp.getEmployeeNumber() == originalEmp.getEmployeeNumber()) {
+                    // Write updated data for this employee
+                    writeUpdatedEmployeeRow(bw);
+                } else {
+                    // Write original data for other employees
+                    writeOriginalEmployeeRow(bw, emp);
+                }
+            }
         }
-        bw.close();
+    }
+
+    private void writeUpdatedEmployeeRow(BufferedWriter bw) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        // Build CSV row with updated values
+        String[] values = {
+                String.valueOf(originalEmp.getEmployeeNumber()),
+                txtLastName.getText().trim(),
+                txtFirstName.getText().trim(),
+                txtBirthday.getText().trim(),
+                txtAddress.getText().trim(),
+                txtPhoneNumber.getText().trim(),
+                txtSss.getText().trim(),
+                txtPhilHealth.getText().trim(),
+                txtTin.getText().trim(),
+                txtPagIBIG.getText().trim(),
+                txtStatus.getText().trim(),
+                txtPosition.getText().trim(),
+                txtSupervisor.getText().trim(),
+                txtBasicSalary.getText().trim(),
+                txtRiceSubsidy.getText().trim(),
+                txtPhoneAllowance.getText().trim(),
+                txtClothingAllowance.getText().trim(),
+                txtGrossSemi.getText().trim(),
+                txtHourlyRate.getText().trim()
+        };
+
+        for (int i = 0; i < values.length; i++) {
+            String cell = values[i];
+            if (cell.contains(",") || cell.contains("\"")) {
+                cell = "\"" + cell.replace("\"", "\"\"") + "\"";
+            }
+            sb.append(cell);
+            if (i < values.length - 1) {
+                sb.append(",");
+            }
+        }
+
+        bw.write(sb.toString());
+        bw.newLine();
+    }
+
+    private void writeOriginalEmployeeRow(BufferedWriter bw, Employee emp) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        // Build CSV row with original values
+        String[] values = {
+                String.valueOf(emp.getEmployeeNumber()),
+                emp.getName().getLastName(),
+                emp.getName().getFirstName(),
+                emp.getBirthday(),
+                emp.getContact().getAddress(),
+                emp.getContact().getPhone(),
+                emp.getGovernmentId().getSss(),
+                emp.getGovernmentId().getPhilhealth(),
+                emp.getGovernmentId().getTin(),
+                emp.getGovernmentId().getPagibig(),
+                emp.getStatus(),
+                emp.getPosition().getPosition(),
+                emp.getPosition().getSupervisor(),
+                String.valueOf(emp.getPay().getBasicSalary()),
+                String.valueOf(emp.getPay().getRiceSubsidy()),
+                String.valueOf(emp.getPay().getPhoneAllowance()),
+                String.valueOf(emp.getPay().getClothingAllowance()),
+                String.valueOf(emp.getPay().getSemiGross()),
+                String.format("%.2f", emp.getPay().calculateHourlyRate())
+        };
+
+        for (int i = 0; i < values.length; i++) {
+            String cell = values[i];
+            if (cell.contains(",") || cell.contains("\"")) {
+                cell = "\"" + cell.replace("\"", "\"\"") + "\"";
+            }
+            sb.append(cell);
+            if (i < values.length - 1) {
+                sb.append(",");
+            }
+        }
+
+        bw.write(sb.toString());
+        bw.newLine();
     }
 }
