@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class MotorPHCSVLoader {
@@ -15,7 +13,7 @@ public class MotorPHCSVLoader {
 
     public void reload() {
         employeeMap.clear();
-        loadEmployeesFromCSV("src/Data.csv"); // Or use a variable if you have one
+        loadEmployeesFromCSV("src/Data.csv");
     }
 
     public Employee getEmployee(int employeeID) {

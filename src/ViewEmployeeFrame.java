@@ -19,7 +19,7 @@ public class ViewEmployeeFrame extends JFrame {
         setContentPane(mainPanel);
         setTitle("Employee Details & Salary");
         setSize(500, 500);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         cmbMonth.setModel(new DefaultComboBoxModel<>(new String[]{
                 "June", "July", "August", "September", "October", "November", "December"
