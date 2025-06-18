@@ -277,10 +277,5 @@ public class GUI extends JFrame {
     public interface UpdateEmployeeCallback {
         void onEmployeeUpdated();
     }
-    //main
-    public static void main(String[] args) {
-        GUI gui = new GUI();
-        gui.setVisible(true);
-    }
 }
 
