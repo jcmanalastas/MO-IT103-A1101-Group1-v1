@@ -24,7 +24,6 @@ public class GUI extends JFrame {
     private JLabel lblEmpNum1;
     private JLabel lblBirthday1;
     private JTable tblEmployees;
-    private JButton btnViewAll;
     private JButton btnViewEmployee;
     private JButton btnUpdateEmp;
     private JButton btnAddEmployee;
@@ -43,7 +42,8 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
 
         createTable(); // Set up payslip table columns
-        initializeEmployeeTable(); // Set up employee table columns
+        initializeEmployeeTable();// Set up employee table columns
+        refreshEmployeeTable(); // Automatically load employee list
         Attendance.loadAttendanceFromCSV(); // Load attendance data
         //Group radio buttons for 15th or 30th payroll
         ButtonGroup payPeriodGroup = new ButtonGroup();
@@ -55,14 +55,12 @@ public class GUI extends JFrame {
                 searchPayslip();
             }
         });
-        // View all employees button
-        btnViewAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                refreshEmployeeTable();
-            }
-        });
+
+        // Initially set disabled by default
+        btnUpdateEmp.setEnabled(false);
+        btnDeleteEmp.setEnabled(false);
         // View selected employee details in a new window
-        btnViewEmployee.addActionListener(new ActionListener() {
+         btnViewEmployee.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
                 if (row == -1) {
@@ -204,21 +202,32 @@ public class GUI extends JFrame {
     // Initialize the employee table with table headers from MPHCR02
     private void initializeEmployeeTable() {
         DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Employee Number", "Name", "SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
+                new String[]{"Employee Number", "Last Name","First Name","SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
         ) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         tblEmployees.setModel(model);
+
+        tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    boolean isRowSelected = tblEmployees.getSelectedRow() != -1;
+                    btnUpdateEmp.setEnabled(isRowSelected);
+                    btnDeleteEmp.setEnabled(isRowSelected);
+                }
+            }
+        });
     }
     // Refreshes the employee table by reloading from csv file
     private void refreshEmployeeTable() {
         csvLoader = new MotorPHCSVLoader("src/Data.csv");
         List<Employee> employees = csvLoader.getAllEmployees();
 
+
         DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Employee Number", "Name", "SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
+                new String[]{"Employee Number", "Last Name","First Name","SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
         ) {
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -229,7 +238,7 @@ public class GUI extends JFrame {
             Employee emp = employees.get(i);
             model.addRow(new Object[]{
                     emp.getEmployeeNumber(),
-                    emp.getFullName(),
+                    emp.getName().getLastName(),emp.getName().getFirstName(),
                     emp.getGovernmentId().getSss(),
                     emp.getGovernmentId().getPhilhealth(),
                     emp.getGovernmentId().getTin(),
@@ -238,6 +247,20 @@ public class GUI extends JFrame {
         }
 
         tblEmployees.setModel(model);
+
+        tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    boolean isRowSelected = tblEmployees.getSelectedRow() != -1;
+                    btnUpdateEmp.setEnabled(isRowSelected);
+                    btnDeleteEmp.setEnabled(isRowSelected);
+                }
+            }
+        });
+
+        tblEmployees.clearSelection();
+        btnUpdateEmp.setEnabled(false);
+        btnDeleteEmp.setEnabled(false);
     }
     // Deletes an employee from the CSV file based on their Employee ID
     private void deleteEmployeeFromCSV(int empID) {
