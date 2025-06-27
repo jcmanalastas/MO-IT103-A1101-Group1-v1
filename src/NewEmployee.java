@@ -55,12 +55,6 @@ public class NewEmployee extends JFrame {
         this.callback = callback;
         initializeFrame(employeeTable);
     }
-
-    // Backward compatibility constructor
-    public NewEmployee(JTable employeeTable) {
-        initializeFrame(employeeTable);
-    }
-
     private void initializeFrame(JTable employeeTable) {
         setTitle("Add New Employee");
         setContentPane(NewEmpPanel);

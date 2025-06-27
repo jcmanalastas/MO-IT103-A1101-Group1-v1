@@ -33,9 +33,34 @@ public class ViewEmployeeFrame extends JFrame {
 
         btnCompute.addActionListener(new ComputeButtonListener());
 
+        //Show employee info right away
+        displayEmployeeDetails();
+
         setVisible(true);
     }
 
+    private void displayEmployeeDetails() {
+        txtDetails.setText("Employee Details\n\n"
+                + "Last Name: " + emp.getName().getLastName() + "\n"
+                + "First Name: " + emp.getName().getFirstName() + "\n"
+                + "Birthday: " + emp.getBirthday() + "\n"
+                + "Address: " + emp.getContact().getAddress() + "\n"
+                + "Phone Number: " + emp.getContact().getPhone() + "\n"
+                + "SSS#: " + emp.getGovernmentId().getSss() + "\n"
+                + "PhilHealth#: " + emp.getGovernmentId().getPhilhealth() + "\n"
+                + "TIN#: " + emp.getGovernmentId().getTin() + "\n"
+                + "Pag-ibig#: " + emp.getGovernmentId().getPagibig() + "\n"
+                + "Status: " + emp.getStatus() + "\n"
+                + "Position: " + emp.getPosition().getPosition() + "\n"
+                + "Immediate Supervisor: " + emp.getPosition().getSupervisor() + "\n"
+                + "Basic Salary: " + emp.getPay().getBasicSalary() + "\n"
+                + "Rice Subsidy: " + emp.getPay().getRiceSubsidy() + "\n"
+                + "Phone Allowance: " + emp.getPay().getPhoneAllowance() + "\n"
+                + "Clothing Allowance: " + emp.getPay().getClothingAllowance() + "\n"
+                + "Gross Semi-monthly Rate: " + emp.getPay().getSemiGross() + "\n"
+                + "Hourly Rate: " + emp.getPay().getHourlyRate() + "\n\n"
+                + "==========================\n");
+    }
 
     private class ComputeButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -44,7 +69,7 @@ public class ViewEmployeeFrame extends JFrame {
     }
 
     private void computeSalary() {
-        int month = cmbMonth.getSelectedIndex() + 6;
+        int month = cmbMonth.getSelectedIndex() + 6; // June = 6
         int year = 2024;
 
         LocalDate from;
@@ -65,37 +90,20 @@ public class ViewEmployeeFrame extends JFrame {
         Payroll payroll = new Payroll();
         payroll.processPayroll(emp, from, to, hours);
 
-        txtDetails.setText("Employee Details\n"
-                + "Pay Period: " + from + " to " + to + "\n\n"
-                + "Last Name: " + emp.getName().getLastName() + "\n"
-                + "First Name: " + emp.getName().getFirstName() + "\n"
-                + "Birthday: " + emp.getBirthday() + "\n"
-                + "Address:" + emp.getContact().getAddress() + "\n"
-                + "Phone Number:" + emp.getContact().getPhone() + "\n"
-                + "SSS# :" + emp.getGovernmentId().getSss() + "\n"
-                + "PhilHealth number :" + emp.getGovernmentId().getPhilhealth() + "\n"
-                + "TIN  :" + emp.getGovernmentId().getTin() + "\n"
-                + "Pag-ibig#  :" + emp.getGovernmentId().getPagibig() + "\n"
-                + "Status: " + emp.getStatus() + "\n"
-                + "Position: " + emp.getPosition().getPosition() + "\n"
-                + "Immediate Supervisor: " + emp.getPosition().getSupervisor() + "\n"
-                + "Basic Salary: " + emp.getPay().getBasicSalary() + "\n"
-                + "Rice Subsidy: " + emp.getPay().getRiceSubsidy() + "\n"
-                + "Phone Allowance: " + emp.getPay().getPhoneAllowance() + "\n"
-                + "Clothing Allowance: " + emp.getPay().getClothingAllowance() + "\n"
-                + "Gross Semi-monthly rate: " + emp.getPay().getSemiGross() + "\n"
-                + "Hourly Rate: " + emp.getPay().getHourlyRate() + "\n"
-
-                + "-----------------------------------\n"
-                + "Worked Hours: " + String.format("%.2f", hours) + "\n"
-                + "Gross Salary: " + String.format("%,.2f", payroll.getGrossSalary()) + "\n"
-                + "--- Deductions ---\n"
-                + "SSS: " + String.format("%,.2f", payroll.getSss()) + "\n"
-                + "PhilHealth: " + String.format("%,.2f", payroll.getPhilHealth()) + "\n"
-                + "Pag-IBIG: " + String.format("%,.2f", payroll.getPagIbig()) + "\n"
-                + "Tax: " + String.format("%,.2f", payroll.getTax()) + "\n"
-                + "==========================\n"
-                + "Total Deductions: " + String.format("%,.2f", payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n"
-                + "Net Pay: " + String.format("%,.2f", payroll.getNetSalary()));
+        // Append salary info below existing details
+        txtDetails.append(
+                "\nPay Period: " + from + " to " + to + "\n"
+                        + "Worked Hours: " + String.format("%.2f", hours) + "\n"
+                        + "Gross Salary: " + String.format("%,.2f", payroll.getGrossSalary()) + "\n"
+                        + "--- Deductions ---\n"
+                        + "SSS: " + String.format("%,.2f", payroll.getSss()) + "\n"
+                        + "PhilHealth: " + String.format("%,.2f", payroll.getPhilHealth()) + "\n"
+                        + "Pag-IBIG: " + String.format("%,.2f", payroll.getPagIbig()) + "\n"
+                        + "Tax: " + String.format("%,.2f", payroll.getTax()) + "\n"
+                        + "==========================\n"
+                        + "Total Deductions: " + String.format("%,.2f",
+                        payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n"
+                        + "Net Pay: " + String.format("%,.2f", payroll.getNetSalary()) + "\n"
+        );
     }
 }
