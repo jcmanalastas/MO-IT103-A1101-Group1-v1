@@ -28,6 +28,24 @@ public class GUI extends JFrame {
     private JButton btnUpdateEmp;
     private JButton btnAddEmployee;
     private JButton btnDeleteEmp;
+    private JTextField lastNameText;
+    private JTextField firstNameText;
+    private JTextField birthdayText;
+    private JTextField addressText;
+    private JTextField textField5;
+    private JTextField SSSText;
+    private JTextField philHealthText;
+    private JLabel lastNameLabel;
+    private JLabel firstNameLabel;
+    private JLabel birthdayLabel;
+    private JLabel addressLabel;
+    private JLabel phoneNumberLabel;
+    private JLabel SSSLabel;
+    private JLabel philHealthLabel;
+    private JTextField TINText;
+    private JLabel TINLabel;
+    private JLabel pagIBIGLabel;
+    private JTextField pagIBIGText;
 
     // Loads employee data from CSV file
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
@@ -41,7 +59,6 @@ public class GUI extends JFrame {
         setSize(1000, 600);
         setLocationRelativeTo(null);
 
-        createTable(); // Set up payslip table columns
         initializeEmployeeTable();// Set up employee table columns
         refreshEmployeeTable(); // Automatically load employee list
         Attendance.loadAttendanceFromCSV(); // Load attendance data
@@ -49,12 +66,6 @@ public class GUI extends JFrame {
         ButtonGroup payPeriodGroup = new ButtonGroup();
         payPeriodGroup.add(btn15);
         payPeriodGroup.add(btn30);
-        // Search Payslip
-        btnSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchPayslip();
-            }
-        });
 
         // Initially set disabled by default
         btnUpdateEmp.setEnabled(false);
@@ -187,17 +198,6 @@ public class GUI extends JFrame {
             JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
             ex.printStackTrace();
         }
-    }
-    // Sets up the columns for the payslip table
-    private void createTable() {
-        txtPayslip.setModel(new DefaultTableModel(
-                null,
-                new String[]{"Pay Start", "Pay End", "Total Hours", "Gross Salary", "SSS", "PhilHealth", "Pag-IBIG", "Tax", "Total Deductions", "Net Pay"}
-        ) {
-            public boolean isCellEditable(int row, int column) {
-                return false; // makes cells not editable, read-only
-            }
-        });
     }
     // Initialize the employee table with table headers from MPHCR02
     private void initializeEmployeeTable() {
