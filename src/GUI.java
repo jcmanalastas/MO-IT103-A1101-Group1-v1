@@ -6,7 +6,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -14,20 +13,49 @@ import java.util.Scanner;
 // Main GUI class for MotorPH Payroll System
 public class GUI extends JFrame {
     private JPanel main;
-    private JTextField txtEmpNum;
-    private JComboBox cmbPayPeriod;
-    private JRadioButton btn15;
-    private JRadioButton btn30;
-    private JTable txtPayslip;
-    private JButton btnSearch;
-    private JLabel lblEmpName1;
-    private JLabel lblEmpNum1;
-    private JLabel lblBirthday1;
     private JTable tblEmployees;
     private JButton btnViewEmployee;
     private JButton btnUpdateEmp;
     private JButton btnAddEmployee;
     private JButton btnDeleteEmp;
+    private JTextField txtLastName;
+    private Employee currentEmployee;
+    private JTextField txtFirstName;
+    private JTextField txtBirthday;
+    private JTextField txtAddress;
+    private JTextField txtPhoneNumber;
+    private JTextField txtSss;
+    private JTextField txtPhilhealth;
+    private JTextField txtTin;
+    private JTextField txtPagIbig;
+    private JTextField txtStatus;
+    private JTextField txtPosition;
+    private JTextField txtImmediateSupervisor;
+    private JTextField txtBasicSalary;
+    private JTextField txtRiceSubsidy;
+    private JTextField txtPhoneAllowance;
+    private JTextField txtClothingAllowance;
+    private JButton btnSave;
+    private JTextField txtMonthlyRate;
+    private JTextField txtHourlyRate;
+    private JLabel lblLastName;
+    private JLabel lblFirstName;
+    private JLabel lblBirthday;
+    private JLabel lblAddress;
+    private JLabel lblPhoneNumber;
+    private JLabel lblSss;
+    private JLabel lblPhilhealth;
+    private JLabel lblTin;
+    private JLabel lblPagIbig;
+    private JLabel lblStatus;
+    private JLabel lblPosition;
+    private JLabel lblImmediateSupervisor;
+    private JLabel lblBasicSalary;
+    private JLabel lblRiceSubsidy;
+    private JLabel lblPhoneAllowance;
+    private JLabel lblClothingAllowance;
+    private JLabel lblMonthlyRate;
+    private JLabel lblHourlyRate;
 
     // Loads employee data from CSV file
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
@@ -41,20 +69,8 @@ public class GUI extends JFrame {
         setSize(1000, 600);
         setLocationRelativeTo(null);
 
-        createTable(); // Set up payslip table columns
-        initializeEmployeeTable();// Set up employee table columns
         refreshEmployeeTable(); // Automatically load employee list
         Attendance.loadAttendanceFromCSV(); // Load attendance data
-        //Group radio buttons for 15th or 30th payroll
-        ButtonGroup payPeriodGroup = new ButtonGroup();
-        payPeriodGroup.add(btn15);
-        payPeriodGroup.add(btn30);
-        // Search Payslip
-        btnSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchPayslip();
-            }
-        });
 
         // Initially set disabled by default
         btnUpdateEmp.setEnabled(false);
@@ -71,25 +87,6 @@ public class GUI extends JFrame {
                 Employee emp = csvLoader.getEmployee(empId);
                 if (emp != null) {
                     new ViewEmployeeFrame(emp);
-                }
-            }
-        });
-        // Update selected employee record
-        btnUpdateEmp.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int row = tblEmployees.getSelectedRow();
-                if (row == -1) {
-                    JOptionPane.showMessageDialog(null, "Please select an employee.");
-                    return;
-                }
-                int empId = (int) tblEmployees.getValueAt(row, 0);
-                Employee emp = csvLoader.getEmployee(empId);
-                if (emp != null) {
-                    new UpdateEmployee(emp, csvLoader, tblEmployees, new UpdateEmployeeCallback() {
-                        public void onEmployeeUpdated() {
-                            refreshEmployeeTable(); // refresh the table after update
-                        }
-                    });
                 }
             }
         });
@@ -122,103 +119,44 @@ public class GUI extends JFrame {
                 JOptionPane.showMessageDialog(null, "Employee deleted successfully.");
             }
         });
-    }
-    // Searches and displays the payslip based on entered employee number and selected cutoff
-    private void searchPayslip() {
-        String empNumText = txtEmpNum.getText().trim();
-        if (empNumText.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please enter Employee ID");
-            return;
-        }
-        if (!btn15.isSelected() && !btn30.isSelected()) {
-            JOptionPane.showMessageDialog(null, "Please select pay coverage (15th or 30th)");
-            return;
-        }
-        try {
-            int empNum = Integer.parseInt(empNumText);
-            Employee employee = csvLoader.getEmployee(empNum);
+                btnUpdateEmp.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        int selectedRow = tblEmployees.getSelectedRow();
+                        if (selectedRow == -1) {
+                            JOptionPane.showMessageDialog(null, "Please select an employee.");
+                            return;
+                        }
 
-            if (employee == null) {
-                JOptionPane.showMessageDialog(null, "Employee not found");
-                return;
-            }
-            // Get selected month from combo box
-            String monthName = cmbPayPeriod.getSelectedItem().toString();// e.g., "June"
-            int year = 2024;
-            int month = java.time.Month.valueOf(monthName.toUpperCase()).getValue();
+                        int empId = (int) tblEmployees.getValueAt(selectedRow, 0);
+                        Employee selectedEmp = csvLoader.getEmployee(empId);
 
-            LocalDate fromDate, toDate;
+                        if (selectedEmp == null) {
+                            JOptionPane.showMessageDialog(null, "Employee not found.");
+                            return;
+                        }
 
-            if (btn15.isSelected()) {
-                fromDate = LocalDate.of(year, month, 1);
-                toDate = LocalDate.of(year, month, 15);
-            } else {
-                fromDate = LocalDate.of(year, month, 16);
-                toDate = LocalDate.of(year, month, java.time.YearMonth.of(year, month).lengthOfMonth());
-            }
-            // Compute total hours from attendance
-            double totalHours = Attendance.getTotalWorkHours(empNum, fromDate, toDate);
-            // Process payroll
-            Payroll payroll = new Payroll();
-            payroll.processPayroll(employee, fromDate, toDate, totalHours);
-            // Display employee info
-            lblEmpNum1.setText("Employee Number: " + empNum);
-            lblEmpName1.setText("Employee Name: " + employee.getFullName());
-            lblBirthday1.setText("Birthday: " + employee.getBirthday());
-            // Fill payslip table
-            DefaultTableModel model = (DefaultTableModel) txtPayslip.getModel();
-            model.setRowCount(0); // Clear previous data
-            model.addRow(new Object[]{
-                    fromDate,
-                    toDate,
-                    String.format("%.2f", totalHours),
-                    String.format("%.2f", payroll.getGrossSalary()),
-                    String.format("%.2f", payroll.getSss()),
-                    String.format("%.2f", payroll.getPhilHealth()),
-                    String.format("%.2f", payroll.getPagIbig()),
-                    String.format("%.2f", payroll.getTax()),
-                    String.format("%.2f", payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()),
-                    String.format("%.2f", payroll.getNetSalary())
-            });
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Invalid employee number. Please enter digits only.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-    // Sets up the columns for the payslip table
-    private void createTable() {
-        txtPayslip.setModel(new DefaultTableModel(
-                null,
-                new String[]{"Pay Start", "Pay End", "Total Hours", "Gross Salary", "SSS", "PhilHealth", "Pag-IBIG", "Tax", "Total Deductions", "Net Pay"}
-        ) {
-            public boolean isCellEditable(int row, int column) {
-                return false; // makes cells not editable, read-only
-            }
-        });
-    }
-    // Initialize the employee table with table headers from MPHCR02
-    private void initializeEmployeeTable() {
-        DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Employee Number", "Last Name","First Name","SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
-        ) {
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tblEmployees.setModel(model);
-
-        tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    boolean isRowSelected = tblEmployees.getSelectedRow() != -1;
-                    btnUpdateEmp.setEnabled(isRowSelected);
-                    btnDeleteEmp.setEnabled(isRowSelected);
-                }
-            }
-        });
+                        // Populate fields
+                        txtLastName.setText(selectedEmp.getName().getLastName());
+                        txtFirstName.setText(selectedEmp.getName().getFirstName());
+                        txtBirthday.setText(selectedEmp.getBirthday());
+                        txtAddress.setText(selectedEmp.getContact().getAddress());
+                        txtPhoneNumber.setText(selectedEmp.getContact().getPhone());
+                        txtSss.setText(selectedEmp.getGovernmentId().getSss());
+                        txtPhilhealth.setText(selectedEmp.getGovernmentId().getPhilhealth());
+                        txtTin.setText(selectedEmp.getGovernmentId().getTin());
+                        txtPagIbig.setText(selectedEmp.getGovernmentId().getPagibig());
+                        txtRiceSubsidy.setText(String.valueOf(selectedEmp.getPay().getRiceSubsidy()));
+                        txtImmediateSupervisor.setText(selectedEmp.getPosition().getSupervisor());
+                        txtStatus.setText(selectedEmp.getStatus());
+                        txtPosition.setText(selectedEmp.getPosition().getPosition());
+                        txtBasicSalary.setText(String.valueOf(selectedEmp.getPay().getBasicSalary()));
+                        txtPhoneAllowance.setText(String.valueOf(selectedEmp.getPay().getPhoneAllowance()));
+                        txtClothingAllowance.setText(String.valueOf(selectedEmp.getPay().getClothingAllowance()));
+                        txtMonthlyRate.setText(String.valueOf(selectedEmp.getPay().getMonthlyGrossSalary()));
+                        txtHourlyRate.setText(String.valueOf(selectedEmp.getPay().getHourlyRate()));
+                    }
+                });
     }
     // Refreshes the employee table by reloading from csv file
     private void refreshEmployeeTable() {
@@ -262,6 +200,8 @@ public class GUI extends JFrame {
         btnUpdateEmp.setEnabled(false);
         btnDeleteEmp.setEnabled(false);
     }
+
+
     // Deletes an employee from the CSV file based on their Employee ID
     private void deleteEmployeeFromCSV(int empID) {
         String filePath = "src/Data.csv";

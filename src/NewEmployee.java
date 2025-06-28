@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class NewEmployee extends JFrame {
     private JPanel NewEmpPanel;
-    private JLabel lblNewEmployee;
     private JLabel lblLastName;
     private JTextField txtLastName;
     private JLabel lblFirstName;
@@ -64,7 +63,7 @@ public class NewEmployee extends JFrame {
     private void initializeFrame(JTable employeeTable) {
         setTitle("Add New Employee");
         setContentPane(NewEmpPanel);
-        setSize(500, 800);
+        setSize(800, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
