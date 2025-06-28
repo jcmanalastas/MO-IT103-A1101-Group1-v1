@@ -162,7 +162,7 @@ public class GUI extends JFrame {
         });
     }
 
-    //Populate form
+    // === POPULATE FORM ===
     private void populateEmployeeFields(Employee emp) {
         lastNameText.setText(emp.getName().getLastName());
         firstNameText.setText(emp.getName().getFirstName());
@@ -184,7 +184,7 @@ public class GUI extends JFrame {
         hourlyRateText.setText(String.format("%.2f", emp.getPay().calculateHourlyRate()));
     }
 
-    //Update Employee
+    // === UPDATE IN MEMORY ===
     private void updateEmployeeObject(Employee emp) {
         emp.getName().setLastName(lastNameText.getText().trim());
         emp.getName().setFirstName(firstNameText.getText().trim());
@@ -220,6 +220,7 @@ public class GUI extends JFrame {
                 emp = updatedEmployee;
             }
 
+            // Escape each value properly
             String[] data = new String[]{
                     String.valueOf(emp.getEmployeeNumber()),
                     emp.getName().getLastName(),
@@ -241,6 +242,9 @@ public class GUI extends JFrame {
                     String.format("%.2f", emp.getPay().getSemiGross()),
                     String.format("%.2f", emp.getPay().calculateHourlyRate())
             };
+
+
+
             // Safely write escaped data
             for (int i = 0; i < data.length; i++) {
                 String cell = escapeCSV(data[i]);
@@ -251,7 +255,11 @@ public class GUI extends JFrame {
             }
             writer.write("\n");
         }
+
+
         writer.close();
+
+
     }
     private String escapeCSV(String value) {
         if (value.contains(",") || value.contains("\"")) {
@@ -272,52 +280,15 @@ public class GUI extends JFrame {
         tblEmployees.setModel(model);
         tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) { // Ensure this event fires only once per selection change
-                    int selectedRow = tblEmployees.getSelectedRow();
-                    boolean isRowSelected = selectedRow != -1;
-
-                    // Enable/disable update and delete buttons based on selection
+                if (!e.getValueIsAdjusting()) {
+                    boolean isRowSelected = tblEmployees.getSelectedRow() != -1;
                     btnUpdateEmp.setEnabled(isRowSelected);
                     btnDeleteEmp.setEnabled(isRowSelected);
-
-                    //Logic to populate Fields
-                    if (isRowSelected) {
-                        int empId = (int) tblEmployees.getValueAt(selectedRow, 0); // Get employee ID from the table
-                        Employee emp = csvLoader.getEmployee(empId); // Retrieve the full Employee object
-                        if (emp != null) {
-                            populateEmployeeFields(emp); // Populate the text fields
-                            currentlySelectedEmployee = emp; // Also set currentlySelectedEmployee
-                        }
-                    } else {
-                        // Clear text fields if no row is selected
-                        clearEmployeeFields(); // You'll need to add this new helper method
-                        currentlySelectedEmployee = null;
-                    }
                 }
             }
         });
     }
-    //Helper method to clear fields
-    private void clearEmployeeFields() {
-        lastNameText.setText("");
-        firstNameText.setText("");
-        birthdayText.setText("");
-        addressText.setText("");
-        phoneText.setText("");
-        SSSText.setText("");
-        philHealthText.setText("");
-        TINText.setText("");
-        pagIBIGText.setText("");
-        statusText.setText("");
-        positionText.setText("");
-        immediateSupervisorText.setText("");
-        basicSalaryText.setText("");
-        riceSubsidyText.setText("");
-        phoneAllowanceText.setText("");
-        clothingAllowanceText.setText("");
-        grossSemiMonthlyRateText.setText("");
-        hourlyRateText.setText("");
-    }
+
     // === REFRESH EMPLOYEE TABLE ===
     private void refreshEmployeeTable() {
         csvLoader = new MotorPHCSVLoader("src/Data.csv");
