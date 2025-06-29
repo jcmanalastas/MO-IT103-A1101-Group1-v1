@@ -1,18 +1,12 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDate;
+import java.awt.event.*;
+import java.io.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
-// Main GUI class for MotorPH Payroll System
 public class GUI extends JFrame {
+    // 1. === Fields ===
     private JPanel main;
     private JTextField txtEmpNum;
     private JComboBox cmbPayPeriod;
@@ -28,12 +22,48 @@ public class GUI extends JFrame {
     private JButton btnUpdateEmp;
     private JButton btnAddEmployee;
     private JButton btnDeleteEmp;
+    private JTextField lastNameText;
+    private JTextField firstNameText;
+    private JTextField birthdayText;
+    private JTextField addressText;
+    private JTextField phoneText;
+    private JTextField SSSText;
+    private JTextField philHealthText;
+    private JLabel lastNameLabel;
+    private JLabel firstNameLabel;
+    private JLabel birthdayLabel;
+    private JLabel addressLabel;
+    private JLabel phoneNumberLabel;
+    private JLabel SSSLabel;
+    private JLabel philHealthLabel;
+    private JTextField TINText;
+    private JLabel TINLabel;
+    private JLabel pagIBIGLabel;
+    private JTextField pagIBIGText;
+    private JTextField statusText;
+    private JLabel statusLabel;
+    private JLabel positionLabel;
+    private JTextField positionText;
+    private JTextField immediateSupervisorText;
+    private JLabel immediateSupervisorLabel;
+    private JTextField basicSalaryText;
+    private JLabel basicSalaryLabel;
+    private JTextField riceSubsidyText;
+    private JLabel riceSubsidyLabel;
+    private JLabel phoneAllowanceLabel;
+    private JTextField phoneAllowanceText;
+    private JTextField clothingAllowanceText;
+    private JLabel clothingAllowanceLabel;
+    private JTextField grossSemiMonthlyRateText;
+    private JLabel grossSemiMonthlyRateLabel;
+    private JTextField hourlyRateText;
+    private JLabel hourlyRateLabel;
+    private JButton btnSaveChanges;
 
-    // Loads employee data from CSV file
+    private Employee currentlySelectedEmployee;
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
-    // Formatter for displaying dates
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    //Constructor: Set up GUI window
+
     public GUI() {
         setTitle("MotorPH Payroll System");
         setContentPane(main);
@@ -41,26 +71,20 @@ public class GUI extends JFrame {
         setSize(1000, 600);
         setLocationRelativeTo(null);
 
-        createTable(); // Set up payslip table columns
-        initializeEmployeeTable();// Set up employee table columns
-        refreshEmployeeTable(); // Automatically load employee list
-        Attendance.loadAttendanceFromCSV(); // Load attendance data
-        //Group radio buttons for 15th or 30th payroll
-        ButtonGroup payPeriodGroup = new ButtonGroup();
-        payPeriodGroup.add(btn15);
-        payPeriodGroup.add(btn30);
-        // Search Payslip
-        btnSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                searchPayslip();
-            }
-        });
+        initializeEmployeeTable();
+        refreshEmployeeTable();
+        Attendance.loadAttendanceFromCSV();
 
-        // Initially set disabled by default
         btnUpdateEmp.setEnabled(false);
         btnDeleteEmp.setEnabled(false);
-        // View selected employee details in a new window
-         btnViewEmployee.addActionListener(new ActionListener() {
+
+        // Add listeners
+        addListeners();
+    }
+
+    // === LISTENERS ===
+    private void addListeners() {
+        btnViewEmployee.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
                 if (row == -1) {
@@ -74,7 +98,7 @@ public class GUI extends JFrame {
                 }
             }
         });
-        // Update selected employee record
+
         btnUpdateEmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
@@ -85,27 +109,41 @@ public class GUI extends JFrame {
                 int empId = (int) tblEmployees.getValueAt(row, 0);
                 Employee emp = csvLoader.getEmployee(empId);
                 if (emp != null) {
-                    new UpdateEmployee(emp, csvLoader, tblEmployees, new UpdateEmployeeCallback() {
-                        public void onEmployeeUpdated() {
-                            refreshEmployeeTable(); // refresh the table after update
-                        }
-                    });
+                    populateEmployeeFields(emp);
+                    currentlySelectedEmployee = emp;
                 }
             }
         });
-        // Add new employee
+
+        btnSaveChanges.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (currentlySelectedEmployee == null) {
+                    JOptionPane.showMessageDialog(null, "No employee selected for update.");
+                    return;
+                }
+                try {
+                    updateEmployeeObject(currentlySelectedEmployee);
+                    updateEmployeeInCSV(currentlySelectedEmployee);
+                    JOptionPane.showMessageDialog(null, "Employee updated successfully!");
+                    refreshEmployeeTable();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error saving changes: " + ex.getMessage());
+                }
+            }
+        });
+
         btnAddEmployee.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 NewEmployeeCallback callback = new NewEmployeeCallback() {
                     public void onEmployeeAdded() {
                         csvLoader = new MotorPHCSVLoader("src/Data.csv");
-                        refreshEmployeeTable(); // refresh the table after update
+                        refreshEmployeeTable();
                     }
                 };
-                new NewEmployee(tblEmployees, callback);
+                new NewEmployee(tblEmployees, callback); // pass table and callback
             }
         });
-        // Delete selected employee
+
         btnDeleteEmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
@@ -117,99 +155,129 @@ public class GUI extends JFrame {
                 if (confirm != JOptionPane.YES_OPTION) return;
 
                 int empID = (int) tblEmployees.getValueAt(row, 0);
-                deleteEmployeeFromCSV(empID); // Remove employee from csv
-                refreshEmployeeTable(); // refresh the table after update
+                deleteEmployeeFromCSV(empID);
+                refreshEmployeeTable();
                 JOptionPane.showMessageDialog(null, "Employee deleted successfully.");
             }
         });
     }
-    // Searches and displays the payslip based on entered employee number and selected cutoff
-    private void searchPayslip() {
-        String empNumText = txtEmpNum.getText().trim();
-        if (empNumText.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please enter Employee ID");
-            return;
-        }
-        if (!btn15.isSelected() && !btn30.isSelected()) {
-            JOptionPane.showMessageDialog(null, "Please select pay coverage (15th or 30th)");
-            return;
-        }
-        try {
-            int empNum = Integer.parseInt(empNumText);
-            Employee employee = csvLoader.getEmployee(empNum);
 
-            if (employee == null) {
-                JOptionPane.showMessageDialog(null, "Employee not found");
-                return;
-            }
-            // Get selected month from combo box
-            String monthName = cmbPayPeriod.getSelectedItem().toString();// e.g., "June"
-            int year = 2024;
-            int month = java.time.Month.valueOf(monthName.toUpperCase()).getValue();
-
-            LocalDate fromDate, toDate;
-
-            if (btn15.isSelected()) {
-                fromDate = LocalDate.of(year, month, 1);
-                toDate = LocalDate.of(year, month, 15);
-            } else {
-                fromDate = LocalDate.of(year, month, 16);
-                toDate = LocalDate.of(year, month, java.time.YearMonth.of(year, month).lengthOfMonth());
-            }
-            // Compute total hours from attendance
-            double totalHours = Attendance.getTotalWorkHours(empNum, fromDate, toDate);
-            // Process payroll
-            Payroll payroll = new Payroll();
-            payroll.processPayroll(employee, fromDate, toDate, totalHours);
-            // Display employee info
-            lblEmpNum1.setText("Employee Number: " + empNum);
-            lblEmpName1.setText("Employee Name: " + employee.getFullName());
-            lblBirthday1.setText("Birthday: " + employee.getBirthday());
-            // Fill payslip table
-            DefaultTableModel model = (DefaultTableModel) txtPayslip.getModel();
-            model.setRowCount(0); // Clear previous data
-            model.addRow(new Object[]{
-                    fromDate,
-                    toDate,
-                    String.format("%.2f", totalHours),
-                    String.format("%.2f", payroll.getGrossSalary()),
-                    String.format("%.2f", payroll.getSss()),
-                    String.format("%.2f", payroll.getPhilHealth()),
-                    String.format("%.2f", payroll.getPagIbig()),
-                    String.format("%.2f", payroll.getTax()),
-                    String.format("%.2f", payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()),
-                    String.format("%.2f", payroll.getNetSalary())
-            });
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Invalid employee number. Please enter digits only.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+    // === POPULATE FORM ===
+    private void populateEmployeeFields(Employee emp) {
+        lastNameText.setText(emp.getName().getLastName());
+        firstNameText.setText(emp.getName().getFirstName());
+        birthdayText.setText(emp.getBirthday());
+        addressText.setText(emp.getContact().getAddress());
+        phoneText.setText(emp.getContact().getPhone());
+        SSSText.setText(emp.getGovernmentId().getSss());
+        philHealthText.setText(emp.getGovernmentId().getPhilhealth());
+        TINText.setText(emp.getGovernmentId().getTin());
+        pagIBIGText.setText(emp.getGovernmentId().getPagibig());
+        statusText.setText(emp.getStatus());
+        positionText.setText(emp.getPosition().getPosition());
+        immediateSupervisorText.setText(emp.getPosition().getSupervisor());
+        basicSalaryText.setText(String.valueOf(emp.getPay().getBasicSalary()));
+        riceSubsidyText.setText(String.valueOf(emp.getPay().getRiceSubsidy()));
+        phoneAllowanceText.setText(String.valueOf(emp.getPay().getPhoneAllowance()));
+        clothingAllowanceText.setText(String.valueOf(emp.getPay().getClothingAllowance()));
+        grossSemiMonthlyRateText.setText(String.valueOf(emp.getPay().getSemiGross()));
+        hourlyRateText.setText(String.format("%.2f", emp.getPay().calculateHourlyRate()));
     }
-    // Sets up the columns for the payslip table
-    private void createTable() {
-        txtPayslip.setModel(new DefaultTableModel(
-                null,
-                new String[]{"Pay Start", "Pay End", "Total Hours", "Gross Salary", "SSS", "PhilHealth", "Pag-IBIG", "Tax", "Total Deductions", "Net Pay"}
-        ) {
-            public boolean isCellEditable(int row, int column) {
-                return false; // makes cells not editable, read-only
-            }
-        });
+
+    // === UPDATE IN MEMORY ===
+    private void updateEmployeeObject(Employee emp) {
+        emp.getName().setLastName(lastNameText.getText().trim());
+        emp.getName().setFirstName(firstNameText.getText().trim());
+        emp.setBirthday(birthdayText.getText().trim());
+        emp.getContact().setAddress(addressText.getText().trim());
+        emp.getContact().setPhone(phoneText.getText().trim());
+        emp.getGovernmentId().setSss(SSSText.getText().trim());
+        emp.getGovernmentId().setPhilhealth(philHealthText.getText().trim());
+        emp.getGovernmentId().setTin(TINText.getText().trim());
+        emp.getGovernmentId().setPagibig(pagIBIGText.getText().trim());
+        emp.setStatus(statusText.getText().trim());
+        emp.getPosition().setPosition(positionText.getText().trim());
+        emp.getPosition().setSupervisor(immediateSupervisorText.getText().trim());
+        emp.getPay().setBasicSalary(Double.parseDouble(basicSalaryText.getText().trim()));
+        emp.getPay().setRiceSubsidy(Double.parseDouble(riceSubsidyText.getText().trim()));
+        emp.getPay().setPhoneAllowance(Double.parseDouble(phoneAllowanceText.getText().trim()));
+        emp.getPay().setClothingAllowance(Double.parseDouble(clothingAllowanceText.getText().trim()));
+        emp.getPay().setSemiGross(Double.parseDouble(grossSemiMonthlyRateText.getText().trim()));
     }
-    // Initialize the employee table with table headers from MPHCR02
+
+    // === UPDATE IN CSV ===
+
+    private void updateEmployeeInCSV(Employee updatedEmployee) throws IOException {
+        List<Employee> allEmployees = csvLoader.getAllEmployees();
+        File file = new File("src/Data.csv");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
+        // Write CSV header
+        writer.write("Employee #,Last Name,First Name,Birthday,Address,Phone Number,SSS #,Philhealth #,TIN #,Pag-ibig #,Status,Position,Immediate Supervisor,Basic Salary,Rice Subsidy,Phone Allowance,Clothing Allowance,Gross Semi-monthly Rate,Hourly Rate\n");
+
+        for (Employee emp : allEmployees) {
+            if (emp.getEmployeeNumber() == updatedEmployee.getEmployeeNumber()) {
+                emp = updatedEmployee;
+            }
+
+            // Escape each value properly
+            String[] data = new String[]{
+                    String.valueOf(emp.getEmployeeNumber()),
+                    emp.getName().getLastName(),
+                    emp.getName().getFirstName(),
+                    emp.getBirthday(),
+                    emp.getContact().getAddress(),
+                    emp.getContact().getPhone(),
+                    emp.getGovernmentId().getSss(),
+                    emp.getGovernmentId().getPhilhealth(),
+                    emp.getGovernmentId().getTin(),
+                    emp.getGovernmentId().getPagibig(),
+                    emp.getStatus(),
+                    emp.getPosition().getPosition(),
+                    emp.getPosition().getSupervisor(),
+                    String.format("%.2f", emp.getPay().getBasicSalary()),
+                    String.format("%.2f", emp.getPay().getRiceSubsidy()),
+                    String.format("%.2f", emp.getPay().getPhoneAllowance()),
+                    String.format("%.2f", emp.getPay().getClothingAllowance()),
+                    String.format("%.2f", emp.getPay().getSemiGross()),
+                    String.format("%.2f", emp.getPay().calculateHourlyRate())
+            };
+
+
+
+            // Safely write escaped data
+            for (int i = 0; i < data.length; i++) {
+                String cell = escapeCSV(data[i]);
+                writer.write(cell);
+                if (i < data.length - 1) {
+                    writer.write(",");
+                }
+            }
+            writer.write("\n");
+        }
+
+
+        writer.close();
+
+
+    }
+    private String escapeCSV(String value) {
+        if (value.contains(",") || value.contains("\"")) {
+            value = value.replace("\"", "\"\"");
+            return "\"" + value + "\"";
+        }
+        return value;
+    }
+    // === EMPLOYEE TABLE SETUP ===
     private void initializeEmployeeTable() {
         DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Employee Number", "Last Name","First Name","SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
+                new String[]{"Employee Number", "Last Name", "First Name", "SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
         ) {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
         tblEmployees.setModel(model);
-
         tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
@@ -220,25 +288,20 @@ public class GUI extends JFrame {
             }
         });
     }
-    // Refreshes the employee table by reloading from csv file
+
+    // === REFRESH EMPLOYEE TABLE ===
     private void refreshEmployeeTable() {
         csvLoader = new MotorPHCSVLoader("src/Data.csv");
         List<Employee> employees = csvLoader.getAllEmployees();
 
+        DefaultTableModel model = (DefaultTableModel) tblEmployees.getModel();
+        model.setRowCount(0);
 
-        DefaultTableModel model = new DefaultTableModel(
-                new String[]{"Employee Number", "Last Name","First Name","SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
-        ) {
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        for (int i = 0; i < employees.size(); i++) {
-            Employee emp = employees.get(i);
+        for (Employee emp : employees) {
             model.addRow(new Object[]{
                     emp.getEmployeeNumber(),
-                    emp.getName().getLastName(),emp.getName().getFirstName(),
+                    emp.getName().getLastName(),
+                    emp.getName().getFirstName(),
                     emp.getGovernmentId().getSss(),
                     emp.getGovernmentId().getPhilhealth(),
                     emp.getGovernmentId().getTin(),
@@ -246,23 +309,12 @@ public class GUI extends JFrame {
             });
         }
 
-        tblEmployees.setModel(model);
-
-        tblEmployees.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    boolean isRowSelected = tblEmployees.getSelectedRow() != -1;
-                    btnUpdateEmp.setEnabled(isRowSelected);
-                    btnDeleteEmp.setEnabled(isRowSelected);
-                }
-            }
-        });
-
         tblEmployees.clearSelection();
         btnUpdateEmp.setEnabled(false);
         btnDeleteEmp.setEnabled(false);
     }
-    // Deletes an employee from the CSV file based on their Employee ID
+
+    // === DELETE EMPLOYEE FROM CSV ===
     private void deleteEmployeeFromCSV(int empID) {
         String filePath = "src/Data.csv";
         StringBuilder newContent = new StringBuilder();
@@ -274,12 +326,10 @@ public class GUI extends JFrame {
                 if (columns.length > 0) {
                     try {
                         int currentID = Integer.parseInt(columns[0].trim());
-                        if (currentID == empID) // Skip the line to be deleted
-                            continue;
-                    } catch (NumberFormatException ignored) {
-                    }
+                        if (currentID == empID) continue;
+                    } catch (NumberFormatException ignored) {}
                 }
-                newContent.append(line).append("\n"); // Add line to new content
+                newContent.append(line).append("\n");
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error reading file: " + e.getMessage());
@@ -287,23 +337,24 @@ public class GUI extends JFrame {
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write(newContent.toString()); // Overwrite file with updated content
+            writer.write(newContent.toString());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error writing file: " + e.getMessage());
         }
     }
-    // Callback interface for notifying when a new employee is added
+
+    // === INTERFACES ===
     public interface NewEmployeeCallback {
         void onEmployeeAdded();
     }
-    // Callback interface for notifying when an employee is updated
+
     public interface UpdateEmployeeCallback {
         void onEmployeeUpdated();
     }
-    //main
+
+    // === MAIN ===
     public static void main(String[] args) {
         GUI gui = new GUI();
         gui.setVisible(true);
     }
 }
-
