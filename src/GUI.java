@@ -10,12 +10,9 @@ import java.util.*;
 public class GUI extends JFrame {
     // 1. === Fields ===
     private JPanel main;
-    private JTextField txtEmpNum;
-    private JComboBox cmbPayPeriod;
     private JRadioButton btn15;
     private JRadioButton btn30;
     private JTextArea txtPayslip;
-    private JButton btnSearch;
     private JLabel lblEmpName1;
     private JLabel lblEmpNum1;
     private JLabel lblBirthday1;
@@ -61,7 +58,6 @@ public class GUI extends JFrame {
     private JTextField hourlyRateText;
     private JLabel hourlyRateLabel;
     private JButton btnSaveChanges;
-    private JTextArea textArea1;
     private JButton searchButton;
     private JTextField txtempNum;
     private JComboBox cmbmonth;
@@ -92,25 +88,21 @@ public class GUI extends JFrame {
         txtempNum.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         cmbmonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         btn15.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         btn30.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
 
@@ -123,7 +115,13 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int empId = Integer.parseInt(txtempNum.getText().trim());
+                    String empNumText = txtempNum.getText().trim();
+                    if (empNumText.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Please enter Employee Number.");
+                        return;
+                    }
+
+                    int empId = Integer.parseInt(empNumText);
                     Employee employee = csvLoader.getEmployee(empId);
 
                     if (employee == null) {
@@ -146,30 +144,31 @@ public class GUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "Please select a pay period.");
                         return;
                     }
-                    double hours = Attendance.getTotalWorkHours(empId, from, to);
 
+                    double hours = Attendance.getTotalWorkHours(empId, from, to);
                     Payroll payroll = new Payroll();
                     payroll.processPayroll(employee, from, to, hours);
 
                     txtPayslip.setText(
-                            "\n======= PAYSLIP ======="+ "\n" +
-                            "Employee #: "+ employee.getEmployeeNumber() +"\n"
-                            + "Last Name: " + employee.getName().getLastName() + "\n"
-                            + "First Name: " + employee.getName().getFirstName() + "\n"
-                            + "Birthday: " + employee.getBirthday() + "\n"
-                            + "Pay Period: " + from + " to " + to + "\n"
-                            + "Total Hours Worked : " + String.format("%.2f", hours) + "\n"
-                            + "Gross Salary: " + String.format("%,.2f", payroll.getGrossSalary()) + "\n"
-                            + "--- Deductions ---\n"
-                            + "SSS: " + String.format("%,.2f", payroll.getSss()) + "\n"
-                            + "PhilHealth: " + String.format("%,.2f", payroll.getPhilHealth()) + "\n"
-                            + "Pag-IBIG: " + String.format("%,.2f", payroll.getPagIbig()) + "\n"
-                            + "Tax: " + String.format("%,.2f", payroll.getTax()) + "\n"
-                            + "====================\n"
-                            + "Total Deductions: " + String.format("%,.2f",
-                            payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n"
-                            + "Net Pay: " + String.format("%,.2f", payroll.getNetSalary()) + "\n"
+                            "\n======= PAYSLIP =======\n" +
+                                    "Employee #: " + employee.getEmployeeNumber() + "\n" +
+                                    "Last Name: " + employee.getName().getLastName() + "\n" +
+                                    "First Name: " + employee.getName().getFirstName() + "\n" +
+                                    "Birthday: " + employee.getBirthday() + "\n" +
+                                    "Pay Period: " + from + " to " + to + "\n" +
+                                    "Total Hours Worked : " + String.format("%.2f", hours) + "\n" +
+                                    "Gross Salary: " + String.format("%,.2f", payroll.getGrossSalary()) + "\n" +
+                                    "--- Deductions ---\n" +
+                                    "SSS: " + String.format("%,.2f", payroll.getSss()) + "\n" +
+                                    "PhilHealth: " + String.format("%,.2f", payroll.getPhilHealth()) + "\n" +
+                                    "Pag-IBIG: " + String.format("%,.2f", payroll.getPagIbig()) + "\n" +
+                                    "Tax: " + String.format("%,.2f", payroll.getTax()) + "\n" +
+                                    "====================\n" +
+                                    "Total Deductions: " + String.format("%,.2f", payroll.getSss() + payroll.getPhilHealth() + payroll.getPagIbig() + payroll.getTax()) + "\n" +
+                                    "Net Pay: " + String.format("%,.2f", payroll.getNetSalary()) + "\n"
                     );
+                } catch (NumberFormatException nfe) {
+                    JOptionPane.showMessageDialog(null, "Invalid Employee Number format. Please enter numbers only.");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
                 }
