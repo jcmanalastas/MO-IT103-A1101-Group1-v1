@@ -19,7 +19,7 @@ public class Payroll {
         double basicSalary = employee.getPay().getBasicSalary();
         calculateGrossSalary(totalHours, hourlyRate);
         computeAllDeductions(basicSalary);
-        printPayslipSummary(employee, fromDate, toDate, totalHours);
+        //printPayslipSummary(employee, fromDate, toDate, totalHours);
     }
 
     private void calculateGrossSalary(double totalHours, double hourlyRate) {
@@ -90,7 +90,7 @@ public class Payroll {
         netSalary = grossSalary - (sss + philHealth + pagIbig + tax);
     }
 
-    private void printPayslipSummary(Employee employee, LocalDate fromDate, LocalDate toDate, double totalHours) {
+    /**private void printPayslipSummary(Employee employee, LocalDate fromDate, LocalDate toDate, double totalHours) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
         System.out.println("\n======= PAYSLIP =======");
@@ -109,7 +109,7 @@ public class Payroll {
         System.out.printf("Total Deductions: %.2f\n", sss + philHealth + pagIbig + tax);
         System.out.printf("Net Salary: %.2f\n", netSalary);
         System.out.println("========================");
-    }
+    } **/
 
     public double getSss() {
         return sss;

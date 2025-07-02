@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class GUI extends JFrame {
-    // 1. === Fields ===
     private JPanel main;
     private JRadioButton btn15;
     private JRadioButton btn30;
@@ -68,22 +67,25 @@ public class GUI extends JFrame {
     private MotorPHCSVLoader csvLoader = new MotorPHCSVLoader("src/Data.csv");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
+    //Constructor
     public GUI() {
+        //Set up the main frame properties
         setTitle("MotorPH Payroll System");
         setContentPane(main);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1300, 650);
         setLocationRelativeTo(null);
 
+        //initialize and load data for the employee table
         initializeEmployeeTable();
         refreshEmployeeTable();
         Attendance.loadAttendanceFromCSV();
 
+        //Disable update and delete buttons by default
         btnUpdateEmp.setEnabled(false);
         btnDeleteEmp.setEnabled(false);
 
-
-        // Add listeners
+        // Add listeners for buttons
         addListeners();
         txtempNum.addActionListener(new ActionListener() {
             @Override
@@ -111,16 +113,18 @@ public class GUI extends JFrame {
         payPeriodGroup.add(btn15);
         payPeriodGroup.add(btn30);
 
+        // Search button logic and generate payslip as per CR1
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    // Validate input for employee number
                     String empNumText = txtempNum.getText().trim();
                     if (empNumText.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Please enter Employee Number.");
                         return;
                     }
-
+                    // Look employee id
                     int empId = Integer.parseInt(empNumText);
                     Employee employee = csvLoader.getEmployee(empId);
 
@@ -128,12 +132,12 @@ public class GUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "Employee ID not found.");
                         return;
                     }
-
+                    // Determine selected month and year for the payroll period
                     int month = cmbmonth.getSelectedIndex() + 6; // June = 6
                     int year = 2024;
 
                     LocalDate from, to;
-
+                    // Determine if pay period is 1-15th or 16-30th
                     if (btn15.isSelected()) {
                         from = LocalDate.of(year, month, 1);
                         to = LocalDate.of(year, month, 15);
@@ -144,11 +148,11 @@ public class GUI extends JFrame {
                         JOptionPane.showMessageDialog(null, "Please select a pay period.");
                         return;
                     }
-
+                    // Calculate total work hours and payroll
                     double hours = Attendance.getTotalWorkHours(empId, from, to);
                     Payroll payroll = new Payroll();
                     payroll.processPayroll(employee, from, to, hours);
-
+                    // Display payslip in the text area (non-editable)
                     txtPayslip.setText(
                             "\n======= PAYSLIP =======\n" +
                                     "Employee #: " + employee.getEmployeeNumber() + "\n" +
@@ -174,16 +178,10 @@ public class GUI extends JFrame {
                 }
             }
         });
-        txtPayslip.addContainerListener(new ContainerAdapter() {
-            @Override
-            public void componentAdded(ContainerEvent e) {
-                super.componentAdded(e);
-            }
-        });
     }
-
-    // === LISTENERS ===
+    // Adds action listeners for view, update, add and delete buttons
     private void addListeners() {
+        // Open new window for selected employee as per CR2 number 2
         btnViewEmployee.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
@@ -198,7 +196,7 @@ public class GUI extends JFrame {
                 }
             }
         });
-
+        // Populate form fields for editing selected employee as per CR3 number 2
         btnUpdateEmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
@@ -214,7 +212,7 @@ public class GUI extends JFrame {
                 }
             }
         });
-
+        // Save updated employee data as per CR3
         btnSaveChanges.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (currentlySelectedEmployee == null) {
@@ -231,7 +229,7 @@ public class GUI extends JFrame {
                 }
             }
         });
-
+        // Open new window to add a new employee as per CR2 number 5
         btnAddEmployee.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 NewEmployeeCallback callback = new NewEmployeeCallback() {
@@ -243,7 +241,7 @@ public class GUI extends JFrame {
                 new NewEmployee(tblEmployees, callback); // pass table and callback
             }
         });
-
+        // Delete selected employee from the csv file as per CR3 number 3
         btnDeleteEmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int row = tblEmployees.getSelectedRow();
@@ -262,7 +260,7 @@ public class GUI extends JFrame {
         });
     }
 
-    // === POPULATE FORM ===
+    // Fills the form fields with the selected employee data
     private void populateEmployeeFields(Employee emp) {
         lastNameText.setText(emp.getName().getLastName());
         firstNameText.setText(emp.getName().getFirstName());
@@ -284,7 +282,7 @@ public class GUI extends JFrame {
         hourlyRateText.setText(String.format("%.2f", emp.getPay().calculateHourlyRate()));
     }
 
-    // === UPDATE IN MEMORY ===
+    // Updates the selected employee object with form field values
     private void updateEmployeeObject(Employee emp) {
         emp.getName().setLastName(lastNameText.getText().trim());
         emp.getName().setFirstName(firstNameText.getText().trim());
@@ -305,8 +303,7 @@ public class GUI extends JFrame {
         emp.getPay().setSemiGross(Double.parseDouble(grossSemiMonthlyRateText.getText().trim()));
     }
 
-    // === UPDATE IN CSV ===
-
+    // Writes updated employee information to the CSV file
     private void updateEmployeeInCSV(Employee updatedEmployee) throws IOException {
         List<Employee> allEmployees = csvLoader.getAllEmployees();
         File file = new File("src/Data.csv");
@@ -320,7 +317,6 @@ public class GUI extends JFrame {
                 emp = updatedEmployee;
             }
 
-            // Escape each value properly
             String[] data = new String[]{
                     String.valueOf(emp.getEmployeeNumber()),
                     emp.getName().getLastName(),
@@ -343,9 +339,7 @@ public class GUI extends JFrame {
                     String.format("%.2f", emp.getPay().calculateHourlyRate())
             };
 
-
-
-            // Safely write escaped data
+            // Safely write ignored data
             for (int i = 0; i < data.length; i++) {
                 String cell = escapeCSV(data[i]);
                 writer.write(cell);
@@ -358,6 +352,7 @@ public class GUI extends JFrame {
 
         writer.close();
     }
+    // Ignores special characters in csv (commas or quotes)
     private String escapeCSV(String value) {
         if (value.contains(",") || value.contains("\"")) {
             value = value.replace("\"", "\"\"");
@@ -365,7 +360,7 @@ public class GUI extends JFrame {
         }
         return value;
     }
-    // === EMPLOYEE TABLE SETUP ===
+    // Initializes the employee table with headers and disables editing
     private void initializeEmployeeTable() {
         DefaultTableModel model = new DefaultTableModel(
                 new String[]{"Employee Number", "Last Name", "First Name", "SSS Number", "PhilHealth Number", "TIN", "Pag-IBIG Number"}, 0
@@ -385,8 +380,7 @@ public class GUI extends JFrame {
             }
         });
     }
-
-    // === REFRESH EMPLOYEE TABLE ===
+    // Reloads all employee data and updates the table display
     private void refreshEmployeeTable() {
         csvLoader = new MotorPHCSVLoader("src/Data.csv");
         List<Employee> employees = csvLoader.getAllEmployees();
@@ -410,8 +404,7 @@ public class GUI extends JFrame {
         btnUpdateEmp.setEnabled(false);
         btnDeleteEmp.setEnabled(false);
     }
-
-    // === DELETE EMPLOYEE FROM CSV ===
+    // Removes an employee from the CSV based on their employee ID
     private void deleteEmployeeFromCSV(int empID) {
         String filePath = "src/Data.csv";
         StringBuilder newContent = new StringBuilder();
@@ -440,18 +433,12 @@ public class GUI extends JFrame {
         }
     }
 
-    // === INTERFACES ===
+    // Callback interface for notifying when a new employee is added
     public interface NewEmployeeCallback {
         void onEmployeeAdded();
     }
-
+    // Callback interface for notifying when an employee is updated
     public interface UpdateEmployeeCallback {
         void onEmployeeUpdated();
     }
-
-    /**
-    public static void main(String[] args) {
-        GUI gui = new GUI();
-        gui.setVisible(true);
-    }**/
 }
