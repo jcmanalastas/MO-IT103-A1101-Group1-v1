@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class MotorPH {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    public static void main(String[] args) {
+    /** public static void main(String[] args) {
         Attendance.loadAttendanceFromCSV();
         Scanner scanner = new Scanner(System.in);
 
@@ -69,5 +69,5 @@ public class MotorPH {
         payroll.processPayroll(employee,fromDate,toDate,totalHours);
 
         scanner.close();
-    }
+    }**/
 }

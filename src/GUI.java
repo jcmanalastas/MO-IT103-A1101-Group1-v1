@@ -356,9 +356,7 @@ public class GUI extends JFrame {
             writer.write("\n");
         }
 
-
         writer.close();
-
     }
     private String escapeCSV(String value) {
         if (value.contains(",") || value.contains("\"")) {
@@ -451,9 +449,9 @@ public class GUI extends JFrame {
         void onEmployeeUpdated();
     }
 
-    // === MAIN ===
+    /**
     public static void main(String[] args) {
         GUI gui = new GUI();
         gui.setVisible(true);
-    }
+    }**/
 }
