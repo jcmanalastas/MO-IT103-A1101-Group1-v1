@@ -95,7 +95,8 @@ public class Payroll {
 
         System.out.println("\n======= PAYSLIP =======");
         System.out.printf("Employee #: %d\n", employee.getEmployeeNumber());
-        System.out.printf("Name: %s\n", employee.getFullName());
+        System.out.printf("Last Name: %s\n", employee.getName().getLastName());
+        System.out.printf("First Name: %s\n", employee.getName().getFirstName());
         System.out.printf("Birthday: %s\n", employee.getBirthday());
         System.out.printf("Pay Period: %s to %s\n", fromDate.format(formatter), toDate.format(formatter));
         System.out.printf("Total Hours Worked: %.2f\n", totalHours);
