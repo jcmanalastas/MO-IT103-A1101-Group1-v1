@@ -30,7 +30,6 @@ public class Login extends JFrame {
                 }
 
                 if (validateCredentials(username, password)) {
-                    JOptionPane.showMessageDialog(null, "Login successful!");
                     dispose(); // close login window
                     new GUI().setVisible(true); // open main app
                 } else {
@@ -59,6 +58,6 @@ public class Login extends JFrame {
         return false;
     }
     public static void main(String[] args) {
-        new Login(); // start with login
+        new Login(); // program starts
     }
 }

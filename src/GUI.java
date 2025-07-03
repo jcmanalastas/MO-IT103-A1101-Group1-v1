@@ -1,3 +1,6 @@
+///Main GUI Interface
+/// Launched when username and password are correct
+/// Finds Employee number, View, Edit, Delete and Add
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
