@@ -15,9 +15,6 @@ public class GUI extends JFrame {
     private JRadioButton btn15;
     private JRadioButton btn30;
     private JTextArea txtPayslip;
-    private JLabel lblEmpName1;
-    private JLabel lblEmpNum1;
-    private JLabel lblBirthday1;
     private JTable tblEmployees;
     private JButton btnViewEmployee;
     private JButton btnUpdateEmp;
